@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30 Day Challenge — Seabridge Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#e8e8e8;font-family:'DM Sans',sans-serif;min-height:100vh}
+header{background:#111;border-bottom:2px solid #d4a843;padding:16px 20px 10px;text-align:center;position:sticky;top:0;z-index:100}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,7vw,3rem);letter-spacing:5px;color:#d4a843;line-height:1}
+header p{font-size:.68rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-top:3px}
+#sync{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;margin-top:3px;color:#3a3a3a;transition:color .3s}
+#lb{display:flex;gap:8px;padding:12px 16px 0;max-width:860px;margin:0 auto}
+.lbc{flex:1;background:#141414;border:2px solid #1e1e1e;border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .2s}
+.lbc.on{background:#1a1500;border-color:#d4a843}
+.lbn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#555}
+.lbc.on .lbn{color:#d4a843}
+.lbp{font-size:1.5rem;font-weight:700;color:#e8e8e8;line-height:1.1}
+.lbc.on .lbp{color:#d4a843}
+.lbb{height:4px;background:#222;border-radius:2px;margin-top:6px;overflow:hidden}
+.lbf{height:100%;background:#3ddc84;border-radius:2px;transition:width .4s}
+.lbc.on .lbf{background:linear-gradient(90deg,#d4a843,#f0c060)}
+.lbx{font-size:.6rem;color:#444;margin-top:4px;letter-spacing:1px}
+#main{max-width:860px;margin:0 auto;padding:0 16px 60px}
+#strip{display:flex;gap:6px;overflow-x:auto;padding:14px 0 10px;scrollbar-width:none}
+#strip::-webkit-scrollbar{display:none}
+.db{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:2px solid #2a2a2a;background:#161616;color:#555;font-family:'Bebas Neue',sans-serif;font-size:.9rem;cursor:pointer;transition:all .15s;position:relative;outline:none}
+.db.on{border-color:#d4a843;background:#d4a843;color:#000}
+.db.dn{border-color:#3ddc84;background:#162018;color:#3ddc84}
+.db.dn::after{content:'';position:absolute;bottom:-2px;right:-2px;width:9px;height:9px;background:#3ddc84;border-radius:50%;border:2px solid #0a0a0a}
+.dh{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.dn2{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:#d4a843}
+.dd{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:#444}
+.sl{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#d4a843;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.cl{display:grid;gap:8px;margin-bottom:4px}
+.cr{background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;user-select:none}
+.cr.ck{background:#121f16;border-color:#3ddc84}
+.cb{width:22px;height:22px;border-radius:5px;border:2px solid #2e2e2e;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.cr.ck .cb{background:#3ddc84;border-color:#3ddc84}
+.ri{font-size:1rem;flex-shrink:0}
+.rt{font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:3px;flex-shrink:0}
+.rl{font-size:.88rem;font-weight:500;color:#bbb;flex:1;transition:all .15s}
+.cr.ck .rl{color:#444;text-decoration:line-through}
+.rn{color:#3a3a3a;font-size:.82rem;padding:10px 0 20px}
+.nr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.nb{padding:8px 20px;border-radius:5px;border:2px solid #222;background:transparent;color:#444;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;outline:none}
+.nb:hover{border-color:#d4a843;color:#d4a843}
+.nb.dx:hover{border-color:#ff4757;color:#ff4757}
+.fn{margin-top:18px;font-size:.6rem;color:#2a2a2a;text-align:center;letter-spacing:1px}
+</style>
+</head>
+<body>
+<header>
+  <h1>30 Day Challenge</h1>
+  <p>Seabridge Gym · Paul · Tony · Josh</p>
+  <div id="sync">● Loading...</div>
+</header>
+<div id="lb"></div>
+<div id="main">
+  <div id="strip"></div>
+  <div id="content"></div>
+  <div class="nr">
+    <button class="nb" onclick="prev()">← Prev</button>
+    <button class="nb" onclick="nxt()">Next →</button>
+    <button class="nb dx" onclick="rst()">Reset</button>
+  </div>
+  <div class="fn">SHARED LIVE — ALL FOUR SEE PROGRESS</div>
+</div>
+
+<script>
+// ── CONFIG — JSONBin (free, no signup needed for reading, just for API key) ──
+// Using a simple approach: store data in JSONBin.io
+// BIN ID will be created on first save
+
+const PEOPLE=['paul','tony','josh'];
+const LABELS={paul:'Paul',tony:'Tony',josh:'Josh'};
+const DAYS=30;
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MEALS=[
+  {key:'breakfast',label:'Breakfast',bg:'#1a3a5c',tc:'#60a0e0'},
+  {key:'shake1',label:'Shake 1',bg:'#2d2208',tc:'#d4a843'},
+  {key:'lunch',label:'Lunch',bg:'#1a2d0a',tc:'#80c040'},
+  {key:'shake2',label:'Shake 2',bg:'#2d2208',tc:'#d4a843'},
+  {key:'dinner',label:'Dinner',bg:'#2d0a1a',tc:'#e060a0'},
+  {key:'water',label:'1 Gallon Water',bg:'#0a1e2d',tc:'#40c0ff'},
+];
+
+function fit(di){
+  const d=di%7;
+  return{cardio:[0,1,2,3,4].includes(d),boot:[0,1,2,3,4].includes(d),sun:d===6};
+}
+function items(di){
+  const f=fit(di),r=MEALS.map(m=>m.key);
+  if(f.cardio)r.push('cardio');
+  if(f.boot)r.push('boot');
+  if(f.sun){r.push('rhino');r.push('weigh');}
+  return r;
+}
+
+let ap='paul',ad={paul:1,tony:1,josh:1},ch={paul:{},tony:{},josh:{}};
+
+// ── FIREBASE REST API — no SDK needed ──
+const FB='https://seabridge30day-default-rtdb.firebaseio.com';
+
+function sync(msg,color){document.getElementById('sync').textContent=msg;document.getElementById('sync').style.color=color||'#3a3a3a';}
+
+async function load(){
+  try{
+    sync('● Loading...','#d4a843');
+    const r=await fetch(FB+'/checks.json');
+    const d=await r.json();
+    if(d){PEOPLE.forEach(p=>{ch[p]=d[p]||{};});}
+    sync('✓ Live','#3ddc84');
+    render();
+    // poll every 8 seconds
+    setInterval(async()=>{
+      try{
+        const r2=await fetch(FB+'/checks.json');
+        const d2=await r2.json();
+        if(d2){PEOPLE.forEach(p=>{ch[p]=d2[p]||{};});render();}
+      }catch(e){}
+    },8000);
+  }catch(e){
+    sync('Offline — saving locally','#ff4757');
+    PEOPLE.forEach(p=>{try{ch[p]=JSON.parse(localStorage.getItem('c30_'+p)||'{}')}catch{}});
+    render();
+  }
+}
+
+async function save(person){
+  sync('⟳ Saving...','#d4a843');
+  try{
+    await fetch(FB+'/checks/'+person+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(ch[person])});
+    sync('✓ Live','#3ddc84');
+  }catch(e){
+    localStorage.setItem('c30_'+person,JSON.stringify(ch[person]));
+    sync('Saved locally','#888');
+  }
+}
+
+function chk(p,d,i){return!!(ch[p]&&ch[p][d+'-'+i]);}
+function dayDone(p,d){return items(d-1).every(i=>chk(p,d,i));}
+function prog(p){
+  let t=0,dn=0;
+  for(let d=1;d<=DAYS;d++){const it=items(d-1);t+=it.length;it.forEach(i=>{if(chk(p,d,i))dn++;});}
+  return{t,dn,pct:t?Math.round(dn/t*100):0};
+}
+
+function toggle(p,d,i){
+  const k=d+'-'+i;
+  ch[p][k]=!ch[p][k];
+  save(p);render();
+}
+function sw(p){ap=p;render();}
+function go(d){ad[ap]=d;render();}
+function prev(){if(ad[ap]>1){ad[ap]--;render();}}
+function nxt(){if(ad[ap]<DAYS){ad[ap]++;render();}}
+function rst(){if(confirm('Reset '+LABELS[ap]+'?')){ch[ap]={};save(ap);render();}}
+
+function render(){
+  // leaderboard
+  document.getElementById('lb').innerHTML=PEOPLE.map(p=>{
+    const pg=prog(p),on=ap===p;
+    return`<div class="lbc${on?' on':''}" onclick="sw('${p}')">
+      <div class="lbn">${LABELS[p]}</div>
+      <div class="lbp">${pg.pct}%</div>
+      <div class="lbb"><div class="lbf" style="width:${pg.pct}%"></div></div>
+      <div class="lbx">${pg.dn}/${pg.t}</div>
+    </div>`;
+  }).join('');
+
+  // strip
+  const day=ad[ap];
+  document.getElementById('strip').innerHTML=Array.from({length:DAYS},(_,i)=>i+1).map(d=>{
+    let c='db';
+    if(day===d)c+=' on';
+    else if(dayDone(ap,d))c+=' dn';
+    return`<button class="${c}" onclick="go(${d})">${d}</button>`;
+  }).join('');
+  setTimeout(()=>{const a=document.querySelector('.db.on');if(a)a.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});},50);
+
+  // content
+  const f=fit(day-1),dow=DOW[(day-1)%7],wk=Math.ceil(day/7);
+  function row(item,tag,bg,tc,label,icon=''){
+    const ck=chk(ap,day,item);
+    return`<div class="cr${ck?' ck':''}" onclick="toggle('${ap}',${day},'${item}')">
+      <div class="cb">${ck?'✓':''}</div>
+      ${icon?`<span class="ri">${icon}</span>`:''}
+      <span class="rt" style="background:${bg};color:${tc}">${tag}</span>
+      <span class="rl">${label}</span>
+    </div>`;
+  }
+
+  const mealRows=MEALS.map(m=>row(m.key,m.label,m.bg,m.tc,m.label,m.key==='water'?'💧':'')).join('');
+
+  let fit2='';
+  if(f.cardio||f.boot){
+    fit2=`<div class="sl">🏃 Fitness</div><div class="cl">
+      ${f.cardio?row('cardio','Cardio','#2a1508','#e08040','30 Min Cardio','🔥'):''}
+      ${f.boot?row('boot','Bootcamp','#08162a','#4db8ff','5AM Bootcamp Class','⚡'):''}
+    </div>`;
+  }else{
+    fit2=`<div class="sl">😴 Rest Day</div><div class="rn">${f.sun?'Rest & recovery — check in with John below.':'Recovery, stretch, or walk.'}</div>`;
+  }
+
+  const sun=f.sun?`<div class="sl">📋 Weekly Check-In</div><div class="cl">
+    ${row('rhino','RhinoFit','#0d1f2d','#4db8ff','Check-In with John — Fasted','📱')}
+    ${row('weigh','Weigh-In','#1a0d2d','#b87fff','Weekly Weigh-In — Fasted Stomach','⚖️')}
+  </div>`:'';
+
+  document.getElementById('content').innerHTML=`
+    <div class="dh"><span class="dn2">Day ${day}</span><span class="dd">${dow} · Week ${wk}</span></div>
+    <div class="sl">🍽️ Meals & Shakes</div>
+    <div class="cl">${mealRows}</div>
+    ${fit2}${sun}`;
+}
+
+load();
+</script>
+</body>
+</html>
