@@ -299,7 +299,7 @@ function render(){
       }
       photoHTML+='<label class="upload-btn'+(photoData?' has-photo':'')+'" onclick="event.stopPropagation()">'+
         '<span>'+(photoData?'✓ Photo uploaded — tap to change':'📷 Upload photo of '+m.label)+'</span>'+
-        '<input type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(\''+ap+'\','+day+',\''+m.key+'\',this)">'+
+        '<input type="file" accept="image/*" onchange="handlePhotoUpload(\''+ap+'\','+day+',\''+m.key+'\',this)">'+
       '</label>';
       photoHTML+='</div>';
     }
@@ -353,7 +353,7 @@ function render(){
       (secaData?'<img class="seca-img" src="'+secaData+'" onclick="openModal(\''+secaData+'\')" alt="SECA Scan">':'')+
       '<label class="seca-upload'+(secaData?' has-img':'')+'" onclick="event.stopPropagation()">'+
         '<span>'+(secaData?'✓ Scan uploaded — tap to update':'📄 Upload SECA scan photo')+'</span>'+
-        '<input type="file" accept="image/*" capture="environment" onchange="handleSecaUpload(\''+ap+'\','+day+',this)">'+
+        '<input type="file" accept="image/*" onchange="handleSecaUpload(\''+ap+'\','+day+',this)">'+
       '</label>'+
       (secaData?'<div class="seca-date">Tap scan to view full size</div>':'')+
     '</div>';
@@ -370,7 +370,7 @@ function render(){
       (secaData?'<img class="seca-img" src="'+secaData+'" onclick="openModal(\''+secaData+'\')" alt="SECA Scan">':'')+
       '<label class="seca-upload'+(secaData?' has-img':'')+'" onclick="event.stopPropagation()">'+
         '<span>'+(secaData?'✓ Scan uploaded — tap to update':'📄 Upload Day 1 SECA scan')+'</span>'+
-        '<input type="file" accept="image/*" capture="environment" onchange="handleSecaUpload(\''+ap+'\',1,this)">'+
+        '<input type="file" accept="image/*" onchange="handleSecaUpload(\''+ap+'\',1,this)">'+
       '</label>'+
     '</div>';
   }
