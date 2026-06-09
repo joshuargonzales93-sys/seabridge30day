@@ -116,11 +116,34 @@ header p{font-size:.68rem;color:#555;letter-spacing:3px;text-transform:uppercase
   <img id="modal-img" src="" alt="">
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-firebase.initializeApp({ databaseURL: "https://seabridge30day-default-rtdb.firebaseio.com" });
-const db = firebase.database();
+// Firebase REST API — no SDK needed
+const FB_URL = "https://seabridge30day-default-rtdb.firebaseio.com";
+
+const db = {
+  _listeners: {},
+  ref: function(path) {
+    return {
+      _path: path,
+      set: function(data) {
+        return fetch(FB_URL + '/' + path + '.json', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        }).then(r => r.json());
+      },
+      on: function(event, cb) {
+        // Initial load
+        fetch(FB_URL + '/' + path + '.json').then(r=>r.json()).then(d=>cb({val:()=>d}));
+        // Poll every 6 seconds
+        const id = setInterval(()=>{
+          fetch(FB_URL + '/' + path + '.json').then(r=>r.json()).then(d=>cb({val:()=>d}));
+        }, 6000);
+        db._listeners[path] = id;
+      }
+    };
+  }
+};
 
 const PEOPLE=['paul','tony','josh'];
 const LABELS={paul:'Paul',tony:'Tony',josh:'Josh'};
