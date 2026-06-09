@@ -257,6 +257,57 @@ function prev(){if(ad[ap]>1){ad[ap]--;render();}}
 function nxt(){if(ad[ap]<DAYS){ad[ap]++;render();}}
 function rst(){if(confirm('Reset '+LABELS[ap]+'?')){checks[ap]={};saveChecks(ap);render();}}
 
+
+function cardioRow(p,d){
+  const ck=chk(p,d,'cardio');
+  const ph=photos[p]&&photos[p][d+'-cardio'];
+  const timeKey=d+'-cardiotime';
+  const savedTime=checks[p]&&checks[p][timeKey]||'';
+
+  let photoHTML='<div class="photo-area">'+
+    (ph?'<img class="photo-preview" src="'+ph+'" onclick="openModal(''+ph+'')" alt="Cardio">':'')+
+    '<div class="photo-required">📸 Photo + time required to check off</div>'+
+    '<label class="upload-btn'+(ph?' has-photo':'')+'" onclick="event.stopPropagation()">'+
+      '<span>'+(ph?'✓ Machine photo uploaded — tap to change':'📷 Upload cardio machine photo')+'</span>'+
+      '<input type="file" accept="image/*" onchange="handlePhotoUpload(''+p+'','+d+','cardio',this)">'+
+    '</label>'+
+    '<div style="margin-top:10px;display:flex;align-items:center;gap:10px">'+
+      '<label style="font-size:.72rem;color:#888;letter-spacing:1px;text-transform:uppercase;flex-shrink:0">⏱ Time:</label>'+
+      '<input type="text" placeholder="e.g. 32 min" value="'+savedTime+'"'+
+        ' onchange="saveCardioTime(''+p+'','+d+',this.value)"'+
+        ' onclick="event.stopPropagation()"'+
+        ' style="background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:8px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.85rem;flex:1;outline:none">'+
+    '</div>'+
+  '</div>';
+
+  return'<div class="mr'+(ck?' ck':'')+'">'+
+    '<div class="mr-top" onclick="tryCheckCardio(''+p+'','+d+')">'+
+      '<div class="cb">'+(ck?'✓':'')+'</div>'+
+      '<span class="ri">🔥</span>'+
+      '<span class="rt" style="background:#2a1508;color:#e08040">Cardio</span>'+
+      '<span class="rl">30 Min Cardio'+(savedTime?' <span style="color:#3ddc84;font-size:.75rem">· '+savedTime+'</span>':'')+'</span>'+
+    '</div>'+
+    photoHTML+
+  '</div>';
+}
+
+function saveCardioTime(p,d,val){
+  checks[p][d+'-cardiotime']=val;
+  saveChecks(p);
+  render();
+}
+
+function tryCheckCardio(p,d){
+  const ph=photos[p]&&photos[p][d+'-cardio'];
+  const timeKey=d+'-cardiotime';
+  const savedTime=checks[p]&&checks[p][timeKey];
+  if(!ph){alert('📸 Please upload a photo of the cardio machine first.');return;}
+  if(!savedTime||savedTime.trim()===''){alert('⏱ Please enter your cardio time first.');return;}
+  const k=d+'-cardio';
+  checks[p][k]=!checks[p][k];
+  saveChecks(p);render();
+}
+
 function render(){
   // Leaderboard
   document.getElementById('lb').innerHTML=PEOPLE.map(p=>{
@@ -330,7 +381,7 @@ function render(){
   let fitness='';
   if(f.cardio||f.boot){
     fitness='<div class="sl">🏃 Fitness</div><div class="cl">'+
-      (f.cardio?simpleRow('cardio','Cardio','#2a1508','#e08040','30 Min Cardio','🔥'):'')+
+      (f.cardio?cardioRow(ap,day):'')+
       (f.boot?simpleRow('boot','Bootcamp','#08162a','#4db8ff','5AM Bootcamp Class','⚡'):'')+
     '</div>';
   }else{
