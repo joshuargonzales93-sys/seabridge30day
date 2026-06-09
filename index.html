@@ -11,7 +11,7 @@ body{background:#0a0a0a;color:#e8e8e8;font-family:'DM Sans',sans-serif;min-heigh
 header{background:#111;border-bottom:2px solid #d4a843;padding:16px 20px 10px;text-align:center;position:sticky;top:0;z-index:100}
 header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,7vw,3rem);letter-spacing:5px;color:#d4a843;line-height:1}
 header p{font-size:.68rem;color:#555;letter-spacing:3px;text-transform:uppercase;margin-top:3px}
-#sync{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;margin-top:3px;color:#3a3a3a;transition:color .3s}
+#sync{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;margin-top:3px;color:#888}
 #lb{display:flex;gap:8px;padding:12px 16px 0;max-width:860px;margin:0 auto}
 .lbc{flex:1;background:#141414;border:2px solid #1e1e1e;border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .2s}
 .lbc.on{background:#1a1500;border-color:#d4a843}
@@ -35,439 +35,420 @@ header p{font-size:.68rem;color:#555;letter-spacing:3px;text-transform:uppercase
 .dd{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:#444}
 .sl{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#d4a843;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
 .cl{display:grid;gap:10px;margin-bottom:4px}
-
-/* MEAL ROW WITH PHOTO */
-.mr{background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;transition:all .15s}
+.mr{background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden}
 .mr.ck{border-color:#3ddc84}
-.mr-top{padding:12px 14px;display:flex;align-items:center;gap:12px}
-.cb{width:22px;height:22px;border-radius:5px;border:2px solid #2e2e2e;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.mr-top{padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.cb{width:22px;height:22px;border-radius:5px;border:2px solid #2e2e2e;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-size:.8rem;font-weight:700;flex-shrink:0}
 .mr.ck .cb{background:#3ddc84;border-color:#3ddc84}
 .rt{font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:3px;flex-shrink:0}
 .rl{font-size:.88rem;font-weight:500;color:#bbb;flex:1}
 .mr.ck .rl{color:#444;text-decoration:line-through}
-
-/* PHOTO AREA */
-.photo-area{border-top:1px solid #1e1e1e;padding:10px 14px;background:#0f0f0f}
-.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:6px;display:block;margin-bottom:8px}
-.photo-required{font-size:.7rem;color:#ff6b35;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.upload-btn{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #333;border-radius:6px;padding:10px 14px;cursor:pointer;transition:all .2s;width:100%}
-.upload-btn:hover{border-color:#d4a843}
-.upload-btn span{font-size:.8rem;color:#666}
-.upload-btn.has-photo span{color:#3ddc84}
-.upload-btn input{display:none}
-
-/* SIMPLE CHECK ROWS (fitness, water etc) */
-.cr{background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;user-select:none}
+.pa{border-top:1px solid #1e1e1e;padding:10px 14px;background:#0f0f0f}
+.pp{width:100%;max-height:180px;object-fit:cover;border-radius:6px;display:block;margin-bottom:8px;cursor:pointer}
+.pr{font-size:.68rem;color:#ff6b35;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.ub{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #333;border-radius:6px;padding:10px 14px;cursor:pointer;width:100%}
+.ub span{font-size:.8rem;color:#666}
+.ub.hp span{color:#3ddc84}
+.ub input{display:none}
+.ti{background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:8px 10px;color:#e8e8e8;font-family:'DM Sans',sans-serif;font-size:.85rem;width:100%;margin-top:8px;outline:none}
+.cr{background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
 .cr.ck{background:#121f16;border-color:#3ddc84}
 .cr .cb{border:2px solid #2e2e2e}
 .cr.ck .cb{background:#3ddc84;border-color:#3ddc84}
-.ri{font-size:1rem;flex-shrink:0}
 .cr .rl{font-size:.88rem;font-weight:500;color:#bbb;flex:1}
 .cr.ck .rl{color:#444;text-decoration:line-through}
-
+.ri{font-size:1rem;flex-shrink:0}
 .rn{color:#3a3a3a;font-size:.82rem;padding:10px 0 20px}
 .nr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.nb{padding:8px 20px;border-radius:5px;border:2px solid #222;background:transparent;color:#444;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;outline:none}
+.nb{padding:8px 20px;border-radius:5px;border:2px solid #222;background:transparent;color:#444;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;outline:none}
 .nb:hover{border-color:#d4a843;color:#d4a843}
 .nb.dx:hover{border-color:#ff4757;color:#ff4757}
 .fn{margin-top:18px;font-size:.6rem;color:#2a2a2a;text-align:center;letter-spacing:1px}
-
-/* SECA SCAN SECTION */
-.seca-card{background:#141414;border:1px solid #2a1a0a;border-radius:10px;padding:16px;margin-bottom:12px}
-.seca-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:#e08040;margin-bottom:4px}
-.seca-sub{font-size:.72rem;color:#555;margin-bottom:12px;letter-spacing:.5px}
-.seca-img{width:100%;border-radius:6px;margin-bottom:10px;display:block}
-.seca-upload{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #2a1a0a;border-radius:6px;padding:10px 14px;cursor:pointer;width:100%;transition:all .2s}
-.seca-upload:hover{border-color:#e08040}
-.seca-upload span{font-size:.8rem;color:#666}
-.seca-upload.has-img span{color:#3ddc84}
-.seca-upload input{display:none}
-.seca-date{font-size:.65rem;color:#444;margin-top:6px;letter-spacing:1px}
-
-/* MODAL */
+.sc{background:#141414;border:1px solid #2a1a0a;border-radius:10px;padding:16px;margin-bottom:12px}
+.sc h3{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:#e08040;margin-bottom:4px}
+.sc p{font-size:.72rem;color:#555;margin-bottom:12px}
+.sc img{width:100%;border-radius:6px;margin-bottom:10px;display:block;cursor:pointer}
+.su{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #2a1a0a;border-radius:6px;padding:10px 14px;cursor:pointer;width:100%}
+.su span{font-size:.8rem;color:#666}
+.su.hp span{color:#3ddc84}
+.su input{display:none}
 #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;align-items:center;justify-content:center;padding:20px}
 #modal.show{display:flex}
 #modal img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
-#modal-close{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+#mc{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}
 </style>
 </head>
 <body>
-
 <header>
   <h1>30 Day Challenge</h1>
   <p>Seabridge Gym · Paul · Tony · Josh</p>
-  <div id="sync">● Connecting...</div>
+  <div id="sync">● Loading...</div>
 </header>
 <div id="lb"></div>
 <div id="main">
   <div id="strip"></div>
   <div id="content"></div>
   <div class="nr">
-    <button class="nb" onclick="prev()">← Prev</button>
-    <button class="nb" onclick="nxt()">Next →</button>
-    <button class="nb dx" onclick="rst()">Reset</button>
+    <button class="nb" id="bp">← Prev</button>
+    <button class="nb" id="bn">Next →</button>
+    <button class="nb dx" id="br">Reset</button>
   </div>
   <div class="fn">SHARED LIVE — ALL FOUR SEE PROGRESS</div>
 </div>
-
-<!-- Image modal -->
 <div id="modal" onclick="closeModal()">
-  <button id="modal-close" onclick="closeModal()">✕</button>
-  <img id="modal-img" src="" alt="">
+  <button id="mc">✕</button>
+  <img id="mi" src="" alt="">
 </div>
 
 <script>
-// Firebase REST API — no SDK needed
-const FB_URL = "https://seabridge30day-default-rtdb.firebaseio.com";
-
-const db = {
-  _listeners: {},
-  ref: function(path) {
-    return {
-      _path: path,
-      set: function(data) {
-        return fetch(FB_URL + '/' + path + '.json', {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(data)
-        }).then(r => r.json());
-      },
-      on: function(event, cb) {
-        // Initial load
-        fetch(FB_URL + '/' + path + '.json').then(r=>r.json()).then(d=>cb({val:()=>d}));
-        // Poll every 6 seconds
-        const id = setInterval(()=>{
-          fetch(FB_URL + '/' + path + '.json').then(r=>r.json()).then(d=>cb({val:()=>d}));
-        }, 6000);
-        db._listeners[path] = id;
-      }
-    };
-  }
-};
-
-const PEOPLE=['paul','tony','josh'];
-const LABELS={paul:'Paul',tony:'Tony',josh:'Josh'};
-const DAYS=30;
-const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-
-const MEALS=[
-  {key:'breakfast',label:'Breakfast',bg:'#1a3a5c',tc:'#60a0e0'},
-  {key:'shake1',label:'Shake 1',bg:'#2d2208',tc:'#d4a843'},
-  {key:'lunch',label:'Lunch',bg:'#1a2d0a',tc:'#80c040'},
-  {key:'shake2',label:'Shake 2',bg:'#2d2208',tc:'#d4a843'},
-  {key:'dinner',label:'Dinner',bg:'#2d0a1a',tc:'#e060a0'},
-  {key:'water',label:'1 Gallon Water',bg:'#0a1e2d',tc:'#40c0ff',noPhoto:true},
+var FB = 'https://seabridge30day-default-rtdb.firebaseio.com';
+var PEOPLE = ['paul','tony','josh'];
+var LABELS = {paul:'Paul',tony:'Tony',josh:'Josh'};
+var DAYS = 30;
+var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var MEALS = [
+  {key:'breakfast',label:'Breakfast',bg:'#1a3a5c',tc:'#60a0e0',photo:true},
+  {key:'shake1',label:'Shake 1',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'lunch',label:'Lunch',bg:'#1a2d0a',tc:'#80c040',photo:true},
+  {key:'shake2',label:'Shake 2',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'dinner',label:'Dinner',bg:'#2d0a1a',tc:'#e060a0',photo:true},
+  {key:'water',label:'1 Gallon Water',bg:'#0a1e2d',tc:'#40c0ff',photo:false}
 ];
 
-function fit(di){const d=di%7;return{cardio:[0,1,2,3,4].includes(d),boot:[0,1,2,3,4].includes(d),sun:d===6};}
-function items(di){
-  const f=fit(di),r=MEALS.map(m=>m.key);
-  if(f.cardio)r.push('cardio');
-  if(f.boot)r.push('boot');
-  if(f.sun){r.push('rhino');r.push('weigh');}
+var ap = 'paul';
+var ad = {paul:1,tony:1,josh:1};
+var checks = {paul:{},tony:{},josh:{}};
+var photos = {paul:{},tony:{},josh:{}};
+var seca = {paul:{},tony:{},josh:{}};
+
+function sync(msg,col){
+  var el = document.getElementById('sync');
+  el.textContent = msg;
+  el.style.color = col || '#888';
+}
+
+function fbGet(path, cb) {
+  fetch(FB + '/' + path + '.json')
+    .then(function(r){ return r.json(); })
+    .then(function(d){ cb(d); })
+    .catch(function(){ cb(null); });
+}
+
+function fbSet(path, data) {
+  fetch(FB + '/' + path + '.json', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  }).catch(function(){});
+}
+
+function loadAll() {
+  var done = 0;
+  var total = PEOPLE.length * 3;
+  function check() {
+    done++;
+    render();
+    if (done >= total) sync('✓ Live','#3ddc84');
+  }
+  PEOPLE.forEach(function(p) {
+    fbGet('checks/' + p, function(d){ checks[p] = d || {}; check(); });
+    fbGet('photos/' + p, function(d){ photos[p] = d || {}; check(); });
+    fbGet('seca/' + p, function(d){ seca[p] = d || {}; check(); });
+  });
+}
+
+function saveChecks(p) { fbSet('checks/' + p, checks[p]); }
+function savePhoto(p, key, data) {
+  if (!photos[p]) photos[p] = {};
+  photos[p][key] = data;
+  fbSet('photos/' + p + '/' + key, data);
+  sync('✓ Saved','#3ddc84');
+}
+function saveSeca(p, key, data) {
+  if (!seca[p]) seca[p] = {};
+  seca[p][key] = data;
+  fbSet('seca/' + p + '/' + key, data);
+  sync('✓ Saved','#3ddc84');
+}
+
+function getFit(di) {
+  var d = di % 7;
+  return { cardio: d < 5, boot: d < 5, sun: d === 6 };
+}
+
+function getItems(di) {
+  var f = getFit(di);
+  var r = MEALS.map(function(m){ return m.key; });
+  if (f.cardio) r.push('cardio');
+  if (f.boot) r.push('boot');
+  if (f.sun) { r.push('rhino'); r.push('weigh'); }
   return r;
 }
 
-let ap='paul',ad={paul:1,tony:1,josh:1};
-let checks={paul:{},tony:{},josh:{}};
-let photos={paul:{},tony:{},josh:{}};  // key: "day-item" -> base64
-let secaScans={paul:{},tony:{},josh:{}}; // key: "day" -> base64
+function chk(p, d, i) { return !!(checks[p] && checks[p][d+'-'+i]); }
+function getPhoto(p, d, i) { return photos[p] && photos[p][d+'-'+i]; }
+function getSeca(p, d) { return seca[p] && seca[p]['d'+d]; }
 
-function setSyncStatus(msg,color){const el=document.getElementById('sync');el.textContent=msg;el.style.color=color||'#3a3a3a';}
-
-// startup moved to end
-
-function saveChecks(p){db.ref('checks/'+p).set(checks[p]);}
-function savePhoto(p,key,data){
-  setSyncStatus('⟳ Uploading...','#d4a843');
-  db.ref('photos/'+p+'/'+key).set(data).then(()=>setSyncStatus('✓ Live Sync Active','#3ddc84'));
-}
-function saveSeca(p,key,data){
-  setSyncStatus('⟳ Uploading...','#d4a843');
-  db.ref('seca/'+p+'/'+key).set(data).then(()=>setSyncStatus('✓ Live Sync Active','#3ddc84'));
+function dayDone(p, d) {
+  return getItems(d-1).every(function(i){ return chk(p, d, i); });
 }
 
-function chk(p,d,i){return!!(checks[p]&&checks[p][d+'-'+i]);}
-function hasPhoto(p,d,i){return!!(photos[p]&&photos[p][d+'-'+i]);}
-function hasSeca(p,d){return!!(secaScans[p]&&secaScans[p]['d'+d]);}
-
-function dayDone(p,d){return items(d-1).every(i=>chk(p,d,i));}
-function prog(p){
-  let t=0,dn=0;
-  for(let d=1;d<=DAYS;d++){const it=items(d-1);t+=it.length;it.forEach(i=>{if(chk(p,d,i))dn++;});}
-  return{t,dn,pct:t?Math.round(dn/t*100):0};
+function prog(p) {
+  var t = 0, dn = 0;
+  for (var d = 1; d <= DAYS; d++) {
+    var its = getItems(d-1);
+    t += its.length;
+    its.forEach(function(i){ if (chk(p, d, i)) dn++; });
+  }
+  return { t:t, dn:dn, pct: t ? Math.round(dn/t*100) : 0 };
 }
 
-function toggleSimple(p,d,i){
-  const k=d+'-'+i;
-  checks[p][k]=!checks[p][k];
-  saveChecks(p);render();
+function compress(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var max = 600;
+      var scale = Math.min(1, max / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      cb(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
-function tryCheckMeal(p,d,item){
-  const k=d+'-'+item;
-  const meal=MEALS.find(m=>m.key===item);
-  if(meal&&!meal.noPhoto&&!hasPhoto(p,d,item)){
-    alert('📸 Please upload a photo first to check off this item.');
+function openModal(src) {
+  document.getElementById('mi').src = src;
+  document.getElementById('modal').className = 'show';
+}
+function closeModal() { document.getElementById('modal').className = ''; }
+
+function sw(p) { ap = p; render(); }
+function go(d) { ad[ap] = d; render(); }
+
+document.getElementById('bp').onclick = function(){ if(ad[ap]>1){ad[ap]--;render();} };
+document.getElementById('bn').onclick = function(){ if(ad[ap]<DAYS){ad[ap]++;render();} };
+document.getElementById('br').onclick = function(){
+  if(confirm('Reset '+LABELS[ap]+'?')){ checks[ap]={}; saveChecks(ap); render(); }
+};
+
+function handleMealPhoto(p, d, item, input) {
+  if (!input.files[0]) return;
+  sync('⟳ Uploading...','#d4a843');
+  compress(input.files[0], function(data) {
+    savePhoto(p, d+'-'+item, data);
+    render();
+  });
+}
+
+function handleSecaPhoto(p, d, input) {
+  if (!input.files[0]) return;
+  sync('⟳ Uploading...','#d4a843');
+  compress(input.files[0], function(data) {
+    saveSeca(p, d, data);
+    render();
+  });
+}
+
+function handleCardioPhoto(p, d, input) {
+  if (!input.files[0]) return;
+  sync('⟳ Uploading...','#d4a843');
+  compress(input.files[0], function(data) {
+    savePhoto(p, d+'-cardio', data);
+    render();
+  });
+}
+
+function checkMeal(p, d, item) {
+  var meal = null;
+  for (var i = 0; i < MEALS.length; i++) { if (MEALS[i].key === item) { meal = MEALS[i]; break; } }
+  if (meal && meal.photo && !getPhoto(p, d, item)) {
+    alert('📸 Upload a photo first to check off this item.');
     return;
   }
-  checks[p][k]=!checks[p][k];
-  saveChecks(p);render();
-}
-
-function handlePhotoUpload(p,d,item,input){
-  const file=input.files[0];
-  if(!file)return;
-  // Compress to max 600px wide
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const img=new Image();
-    img.onload=function(){
-      const canvas=document.createElement('canvas');
-      const maxW=600;
-      const scale=Math.min(1,maxW/img.width);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      const data=canvas.toDataURL('image/jpeg',0.7);
-      photos[p][d+'-'+item]=data;
-      savePhoto(p,d+'-'+item,data);
-      render();
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function handleSecaUpload(p,d,input){
-  const file=input.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const img=new Image();
-    img.onload=function(){
-      const canvas=document.createElement('canvas');
-      const maxW=800;
-      const scale=Math.min(1,maxW/img.width);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      const data=canvas.toDataURL('image/jpeg',0.75);
-      secaScans[p]['d'+d]=data;
-      saveSeca(p,'d'+d,data);
-      render();
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function openModal(src){
-  document.getElementById('modal-img').src=src;
-  document.getElementById('modal').classList.add('show');
-}
-function closeModal(){document.getElementById('modal').classList.remove('show');}
-
-function sw(p){ap=p;render();}
-function go(d){ad[ap]=d;render();}
-function prev(){if(ad[ap]>1){ad[ap]--;render();}}
-function nxt(){if(ad[ap]<DAYS){ad[ap]++;render();}}
-function rst(){if(confirm('Reset '+LABELS[ap]+'?')){checks[ap]={};saveChecks(ap);render();}}
-
-
-function cardioRow(p,d){
-  const ck=chk(p,d,'cardio');
-  const ph=photos[p]&&photos[p][d+'-cardio'];
-  const timeKey=d+'-cardiotime';
-  const savedTime=checks[p]&&checks[p][timeKey]||'';
-
-  let photoHTML='<div class="photo-area">'+
-    (ph?'<img class="photo-preview" src="'+ph+'" onclick="openModal(''+ph+'')" alt="Cardio">':'')+
-    '<div class="photo-required">📸 Photo + time required to check off</div>'+
-    '<label class="upload-btn'+(ph?' has-photo':'')+'" onclick="event.stopPropagation()">'+
-      '<span>'+(ph?'✓ Machine photo uploaded — tap to change':'📷 Upload cardio machine photo')+'</span>'+
-      '<input type="file" accept="image/*" onchange="handlePhotoUpload(''+p+'','+d+','cardio',this)">'+
-    '</label>'+
-    '<div style="margin-top:10px;display:flex;align-items:center;gap:10px">'+
-      '<label style="font-size:.72rem;color:#888;letter-spacing:1px;text-transform:uppercase;flex-shrink:0">⏱ Time:</label>'+
-      '<input type="text" placeholder="e.g. 32 min" value="'+savedTime+'"'+
-        ' onchange="saveCardioTime(''+p+'','+d+',this.value)"'+
-        ' onclick="event.stopPropagation()"'+
-        ' style="background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:8px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.85rem;flex:1;outline:none">'+
-    '</div>'+
-  '</div>';
-
-  return'<div class="mr'+(ck?' ck':'')+'">'+
-    '<div class="mr-top" onclick="tryCheckCardio(''+p+'','+d+')">'+
-      '<div class="cb">'+(ck?'✓':'')+'</div>'+
-      '<span class="ri">🔥</span>'+
-      '<span class="rt" style="background:#2a1508;color:#e08040">Cardio</span>'+
-      '<span class="rl">30 Min Cardio'+(savedTime?' <span style="color:#3ddc84;font-size:.75rem">· '+savedTime+'</span>':'')+'</span>'+
-    '</div>'+
-    photoHTML+
-  '</div>';
-}
-
-function saveCardioTime(p,d,val){
-  checks[p][d+'-cardiotime']=val;
+  var k = d+'-'+item;
+  checks[p][k] = !checks[p][k];
   saveChecks(p);
   render();
 }
 
-function tryCheckCardio(p,d){
-  const ph=photos[p]&&photos[p][d+'-cardio'];
-  const timeKey=d+'-cardiotime';
-  const savedTime=checks[p]&&checks[p][timeKey];
-  if(!ph){alert('📸 Please upload a photo of the cardio machine first.');return;}
-  if(!savedTime||savedTime.trim()===''){alert('⏱ Please enter your cardio time first.');return;}
-  const k=d+'-cardio';
-  checks[p][k]=!checks[p][k];
-  saveChecks(p);render();
+function checkCardio(p, d) {
+  if (!getPhoto(p, d, 'cardio')) { alert('📸 Upload cardio machine photo first.'); return; }
+  var t = checks[p] && checks[p][d+'-cardiotime'];
+  if (!t || !t.trim()) { alert('⏱ Enter your cardio time first.'); return; }
+  var k = d+'-cardio';
+  checks[p][k] = !checks[p][k];
+  saveChecks(p);
+  render();
 }
 
-function render(){
+function saveCardioTime(p, d, val) {
+  checks[p][d+'-cardiotime'] = val;
+  saveChecks(p);
+}
+
+function checkSimple(p, d, item) {
+  var k = d+'-'+item;
+  checks[p][k] = !checks[p][k];
+  saveChecks(p);
+  render();
+}
+
+function render() {
+  var day = ad[ap];
+  var f = getFit(day-1);
+  var dow = DOW[(day-1)%7];
+  var wk = Math.ceil(day/7);
+
   // Leaderboard
-  document.getElementById('lb').innerHTML=PEOPLE.map(p=>{
-    const pg=prog(p),on=ap===p;
-    return'<div class="lbc'+(on?' on':'')+'" onclick="sw(\''+p+'\')">'+
-      '<div class="lbn">'+LABELS[p]+'</div>'+
-      '<div class="lbp">'+pg.pct+'%</div>'+
-      '<div class="lbb"><div class="lbf" style="width:'+pg.pct+'%"></div></div>'+
-      '<div class="lbx">'+pg.dn+'/'+pg.t+'</div>'+
-    '</div>';
-  }).join('');
+  var lbHTML = '';
+  PEOPLE.forEach(function(p) {
+    var pg = prog(p);
+    var on = ap === p;
+    lbHTML += '<div class="lbc'+(on?' on':'')+'" onclick="sw(\''+p+'\')">' +
+      '<div class="lbn">'+LABELS[p]+'</div>' +
+      '<div class="lbp">'+pg.pct+'%</div>' +
+      '<div class="lbb"><div class="lbf" style="width:'+pg.pct+'%"></div></div>' +
+      '<div class="lbx">'+pg.dn+'/'+pg.t+'</div></div>';
+  });
+  document.getElementById('lb').innerHTML = lbHTML;
 
   // Day strip
-  const day=ad[ap];
-  document.getElementById('strip').innerHTML=Array.from({length:DAYS},(_,i)=>i+1).map(d=>{
-    let c='db';
-    if(day===d)c+=' on';
-    else if(dayDone(ap,d))c+=' dn';
-    return'<button class="'+c+'" onclick="go('+d+')">'+d+'</button>';
-  }).join('');
-  setTimeout(()=>{const a=document.querySelector('.db.on');if(a)a.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});},50);
+  var stripHTML = '';
+  for (var d = 1; d <= DAYS; d++) {
+    var cls = 'db';
+    if (day === d) cls += ' on';
+    else if (dayDone(ap, d)) cls += ' dn';
+    stripHTML += '<button class="'+cls+'" onclick="go('+d+')">'+d+'</button>';
+  }
+  document.getElementById('strip').innerHTML = stripHTML;
+  setTimeout(function(){
+    var a = document.querySelector('.db.on');
+    if (a) a.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+  }, 50);
 
-  const f=fit(day-1),dow=DOW[(day-1)%7],wk=Math.ceil(day/7);
-
-  // Build meal rows (with photo upload)
-  function mealRow(m){
-    const ck=chk(ap,day,m.key);
-    const ph=hasPhoto(ap,day,m.key);
-    const photoData=photos[ap]&&photos[ap][day+'-'+m.key];
-    const needsPhoto=!m.noPhoto;
-
-    let photoHTML='';
-    if(needsPhoto){
-      photoHTML='<div class="photo-area">';
-      if(photoData){
-        photoHTML+='<img class="photo-preview" src="'+photoData+'" onclick="openModal(\''+photoData+'\')" alt="'+m.label+'">';
-      }
-      if(!ck){
-        photoHTML+='<div class="photo-required">📸 Photo required to check off</div>';
-      }
-      photoHTML+='<label class="upload-btn'+(photoData?' has-photo':'')+'" onclick="event.stopPropagation()">'+
-        '<span>'+(photoData?'✓ Photo uploaded — tap to change':'📷 Upload photo of '+m.label)+'</span>'+
-        '<input type="file" accept="image/*" onchange="handlePhotoUpload(\''+ap+'\','+day+',\''+m.key+'\',this)">'+
-      '</label>';
-      photoHTML+='</div>';
+  // Meal rows
+  var mealHTML = '';
+  MEALS.forEach(function(m) {
+    var ck = chk(ap, day, m.key);
+    var ph = getPhoto(ap, day, m.key);
+    var row = '<div class="mr'+(ck?' ck':'')+'">';
+    row += '<div class="mr-top" onclick="checkMeal(\''+ap+'\','+day+',\''+m.key+'\')">';
+    row += '<div class="cb">'+(ck?'✓':'')+'</div>';
+    row += '<span class="rt" style="background:'+m.bg+';color:'+m.tc+'">'+m.label+'</span>';
+    row += '<span class="rl">'+m.label+'</span></div>';
+    if (m.photo) {
+      row += '<div class="pa">';
+      if (ph) row += '<img class="pp" src="'+ph+'" onclick="openModal(\''+ph+'\')" alt="">';
+      if (!ck) row += '<div class="pr">📸 Photo required to check off</div>';
+      row += '<label class="ub'+(ph?' hp':'')+'">';
+      row += '<span>'+(ph?'✓ Photo saved — tap to change':'📷 Upload photo of '+m.label)+'</span>';
+      row += '<input type="file" accept="image/*" onchange="handleMealPhoto(\''+ap+'\','+day+',\''+m.key+'\',this)"></label>';
+      row += '</div>';
     }
+    row += '</div>';
+    mealHTML += row;
+  });
 
-    return'<div class="mr'+(ck?' ck':'')+'">'+
-      '<div class="mr-top" onclick="tryCheckMeal(\''+ap+'\','+day+',\''+m.key+'\')">'+
-        '<div class="cb">'+(ck?'✓':'')+'</div>'+
-        '<span class="rt" style="background:'+m.bg+';color:'+m.tc+'">'+m.label+'</span>'+
-        '<span class="rl">'+m.label+(needsPhoto&&!ph?' <span style="color:#ff6b35;font-size:.7rem">· needs photo</span>':'')+'</span>'+
-      '</div>'+
-      photoHTML+
-    '</div>';
+  // Fitness
+  var fitHTML = '';
+  if (f.cardio || f.boot) {
+    fitHTML = '<div class="sl">🏃 Fitness</div><div class="cl">';
+    // Cardio with photo + time
+    if (f.cardio) {
+      var ck2 = chk(ap, day, 'cardio');
+      var cph = getPhoto(ap, day, 'cardio');
+      var ctime = checks[ap] && checks[ap][day+'-cardiotime'] || '';
+      fitHTML += '<div class="mr'+(ck2?' ck':'')+'">';
+      fitHTML += '<div class="mr-top" onclick="checkCardio(\''+ap+'\','+day+')">';
+      fitHTML += '<div class="cb">'+(ck2?'✓':'')+'</div>';
+      fitHTML += '<span class="ri">🔥</span>';
+      fitHTML += '<span class="rt" style="background:#2a1508;color:#e08040">Cardio</span>';
+      fitHTML += '<span class="rl">30 Min Cardio'+(ctime?' <span style="color:#3ddc84;font-size:.75rem">· '+ctime+'</span>':'')+'</span></div>';
+      fitHTML += '<div class="pa">';
+      if (cph) fitHTML += '<img class="pp" src="'+cph+'" onclick="openModal(\''+cph+'\')" alt="">';
+      fitHTML += '<div class="pr">📸 Photo + time required</div>';
+      fitHTML += '<label class="ub'+(cph?' hp':'')+'">';
+      fitHTML += '<span>'+(cph?'✓ Photo saved — tap to change':'📷 Upload cardio machine photo')+'</span>';
+      fitHTML += '<input type="file" accept="image/*" onchange="handleCardioPhoto(\''+ap+'\','+day+',this)"></label>';
+      fitHTML += '<input class="ti" type="text" placeholder="Enter time e.g. 32 min" value="'+ctime+'" onchange="saveCardioTime(\''+ap+'\','+day+',this.value)">';
+      fitHTML += '</div></div>';
+    }
+    // Bootcamp simple
+    if (f.boot) {
+      var bck = chk(ap, day, 'boot');
+      fitHTML += '<div class="cr'+(bck?' ck':'')+'" onclick="checkSimple(\''+ap+'\','+day+',\'boot\')">';
+      fitHTML += '<div class="cb">'+(bck?'✓':'')+'</div>';
+      fitHTML += '<span class="ri">⚡</span>';
+      fitHTML += '<span class="rt" style="background:#08162a;color:#4db8ff">Bootcamp</span>';
+      fitHTML += '<span class="rl">5AM Bootcamp Class</span></div>';
+    }
+    fitHTML += '</div>';
+  } else {
+    fitHTML = '<div class="sl">😴 Rest Day</div><div class="rn">'+(f.sun?'Rest & recovery — check in with John below.':'Recovery, stretch, or walk.')+'</div>';
   }
 
-  // Simple check row
-  function simpleRow(item,tag,bg,tc,label,icon){
-    const ck=chk(ap,day,item);
-    return'<div class="cr'+(ck?' ck':'')+'" onclick="toggleSimple(\''+ap+'\','+day+',\''+item+'\')">'+
-      '<div class="cb">'+(ck?'✓':'')+'</div>'+
-      (icon?'<span class="ri">'+icon+'</span>':'')+
-      '<span class="rt" style="background:'+bg+';color:'+tc+'">'+tag+'</span>'+
-      '<span class="rl">'+label+'</span>'+
-    '</div>';
+  // Sunday
+  var sunHTML = '';
+  if (f.sun) {
+    var rck = chk(ap,day,'rhino'), wck = chk(ap,day,'weigh');
+    var sd = getSeca(ap, day);
+    sunHTML += '<div class="sl">📋 Weekly Check-In</div><div class="cl">';
+    sunHTML += '<div class="cr'+(rck?' ck':'')+'" onclick="checkSimple(\''+ap+'\','+day+',\'rhino\')">';
+    sunHTML += '<div class="cb">'+(rck?'✓':'')+'</div><span class="ri">📱</span>';
+    sunHTML += '<span class="rt" style="background:#0d1f2d;color:#4db8ff">RhinoFit</span>';
+    sunHTML += '<span class="rl">Check-In with John (Trainer) — Fasted</span></div>';
+    sunHTML += '<div class="cr'+(wck?' ck':'')+'" onclick="checkSimple(\''+ap+'\','+day+',\'weigh\')">';
+    sunHTML += '<div class="cb">'+(wck?'✓':'')+'</div><span class="ri">⚖️</span>';
+    sunHTML += '<span class="rt" style="background:#1a0d2d;color:#b87fff">Weigh-In</span>';
+    sunHTML += '<span class="rl">Weekly Weigh-In — Fasted Stomach</span></div></div>';
+    sunHTML += '<div class="sl">📊 SECA Scan</div>';
+    sunHTML += '<div class="sc"><h3>Week '+wk+' Scan</h3><p>Upload SECA body composition scan after check-in</p>';
+    if (sd) sunHTML += '<img src="'+sd+'" onclick="openModal(\''+sd+'\')" alt="SECA">';
+    sunHTML += '<label class="su'+(sd?' hp':'')+'">';
+    sunHTML += '<span>'+(sd?'✓ Scan uploaded — tap to change':'📄 Upload SECA scan')+'</span>';
+    sunHTML += '<input type="file" accept="image/*" onchange="handleSecaPhoto(\''+ap+'\','+day+',this)"></label></div>';
   }
 
-  const mealRows=MEALS.map(m=>mealRow(m)).join('');
-
-  let fitness='';
-  if(f.cardio||f.boot){
-    fitness='<div class="sl">🏃 Fitness</div><div class="cl">'+
-      (f.cardio?cardioRow(ap,day):'')+
-      (f.boot?simpleRow('boot','Bootcamp','#08162a','#4db8ff','5AM Bootcamp Class','⚡'):'')+
-    '</div>';
-  }else{
-    fitness='<div class="sl">😴 Rest Day</div><div class="rn">'+(f.sun?'Rest & recovery — check in with John below.':'Recovery, stretch, or walk.')+'</div>';
+  // Day 1 SECA baseline
+  var d1HTML = '';
+  if (day === 1) {
+    var s1 = getSeca(ap, 1);
+    d1HTML = '<div class="sl">📊 SECA — Day 1 Baseline</div>';
+    d1HTML += '<div class="sc"><h3>Day 1 Baseline Scan</h3><p>Upload your starting body composition scan</p>';
+    if (s1) d1HTML += '<img src="'+s1+'" onclick="openModal(\''+s1+'\')" alt="SECA">';
+    d1HTML += '<label class="su'+(s1?' hp':'')+'">';
+    d1HTML += '<span>'+(s1?'✓ Scan uploaded — tap to change':'📄 Upload Day 1 SECA scan')+'</span>';
+    d1HTML += '<input type="file" accept="image/*" onchange="handleSecaPhoto(\''+ap+'\',1,this)"></label></div>';
   }
 
-  // Sunday check-in
-  let sunday='';
-  if(f.sun){
-    const secaData=secaScans[ap]&&secaScans[ap]['d'+day];
-    const isDay1=(day===1);
-    sunday='<div class="sl">📋 Weekly Check-In</div><div class="cl">'+
-      simpleRow('rhino','RhinoFit','#0d1f2d','#4db8ff','Check-In with John (Trainer) — Fasted','📱')+
-      simpleRow('weigh','Weigh-In','#1a0d2d','#b87fff','Weekly Weigh-In — Fasted Stomach','⚖️')+
-    '</div>'+
-    '<div class="sl">📊 SECA Scan</div>'+
-    '<div class="seca-card">'+
-      '<div class="seca-title">'+(isDay1?'Day 1 Baseline Scan':'Week '+wk+' Scan')+'</div>'+
-      '<div class="seca-sub">Upload your SECA body composition scan after check-in</div>'+
-      (secaData?'<img class="seca-img" src="'+secaData+'" onclick="openModal(\''+secaData+'\')" alt="SECA Scan">':'')+
-      '<label class="seca-upload'+(secaData?' has-img':'')+'" onclick="event.stopPropagation()">'+
-        '<span>'+(secaData?'✓ Scan uploaded — tap to update':'📄 Upload SECA scan photo')+'</span>'+
-        '<input type="file" accept="image/*" onchange="handleSecaUpload(\''+ap+'\','+day+',this)">'+
-      '</label>'+
-      (secaData?'<div class="seca-date">Tap scan to view full size</div>':'')+
-    '</div>';
-  }
-
-  // Day 1 always show SECA baseline
-  let day1seca='';
-  if(day===1&&!f.sun){
-    const secaData=secaScans[ap]&&secaScans[ap]['d1'];
-    day1seca='<div class="sl">📊 SECA Scan — Day 1 Baseline</div>'+
-    '<div class="seca-card">'+
-      '<div class="seca-title">Day 1 Baseline Scan</div>'+
-      '<div class="seca-sub">Upload your starting SECA body composition scan</div>'+
-      (secaData?'<img class="seca-img" src="'+secaData+'" onclick="openModal(\''+secaData+'\')" alt="SECA Scan">':'')+
-      '<label class="seca-upload'+(secaData?' has-img':'')+'" onclick="event.stopPropagation()">'+
-        '<span>'+(secaData?'✓ Scan uploaded — tap to update':'📄 Upload Day 1 SECA scan')+'</span>'+
-        '<input type="file" accept="image/*" onchange="handleSecaUpload(\''+ap+'\',1,this)">'+
-      '</label>'+
-    '</div>';
-  }
-
-  document.getElementById('content').innerHTML=
-    '<div class="dh"><span class="dn2">Day '+day+'</span><span class="dd">'+dow+' · Week '+wk+'</span></div>'+
-    '<div class="sl">🍽️ Meals & Shakes</div>'+
-    '<div class="cl">'+mealRows+'</div>'+
-    fitness+sunday+day1seca;
+  document.getElementById('content').innerHTML =
+    '<div class="dh"><span class="dn2">Day '+day+'</span><span class="dd">'+dow+' · Week '+wk+'</span></div>' +
+    '<div class="sl">🍽️ Meals & Shakes</div><div class="cl">'+mealHTML+'</div>' +
+    fitHTML + sunHTML + d1HTML;
 }
 
+// ── START ──
 render();
+sync('● Loading...','#d4a843');
 
-// ── STARTUP ──
-render();
-setSyncStatus('● Loading...','#d4a843');
-
-let loadCount = 0;
-const totalLoads = PEOPLE.length * 3;
-function onDataLoad(){
-  loadCount++;
-  render();
-  if(loadCount >= totalLoads) setSyncStatus('✓ Live','#3ddc84');
+// Poll Firebase every 8 seconds
+function poll() {
+  var done = 0;
+  var total = PEOPLE.length * 3;
+  function check(){ done++; if(done>=total){ render(); sync('✓ Live','#3ddc84'); } }
+  PEOPLE.forEach(function(p){
+    fbGet('checks/'+p, function(d){ checks[p]=d||{}; check(); });
+    fbGet('photos/'+p, function(d){ photos[p]=d||{}; check(); });
+    fbGet('seca/'+p, function(d){ seca[p]=d||{}; check(); });
+  });
 }
-PEOPLE.forEach(p=>{
-  db.ref('checks/'+p).on('value',snap=>{checks[p]=snap.val()||{};onDataLoad();});
-  db.ref('photos/'+p).on('value',snap=>{photos[p]=snap.val()||{};onDataLoad();});
-  db.ref('seca/'+p).on('value',snap=>{secaScans[p]=snap.val()||{};onDataLoad();});
-});
+poll();
+setInterval(poll, 8000);
 </script>
 </body>
 </html>
