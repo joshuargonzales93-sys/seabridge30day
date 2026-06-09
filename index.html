@@ -175,25 +175,7 @@ let secaScans={paul:{},tony:{},josh:{}}; // key: "day" -> base64
 
 function setSyncStatus(msg,color){const el=document.getElementById('sync');el.textContent=msg;el.style.color=color||'#3a3a3a';}
 
-// Load all from Firebase
-let loadCount = 0;
-const totalLoads = PEOPLE.length * 3;
-
-function onDataLoad(){ 
-  loadCount++;
-  render();
-  if(loadCount >= totalLoads) setSyncStatus('✓ Live Sync Active','#3ddc84');
-}
-
-PEOPLE.forEach(p=>{
-  db.ref('checks/'+p).on('value',snap=>{checks[p]=snap.val()||{};onDataLoad();});
-  db.ref('photos/'+p).on('value',snap=>{photos[p]=snap.val()||{};onDataLoad();});
-  db.ref('seca/'+p).on('value',snap=>{secaScans[p]=snap.val()||{};onDataLoad();});
-});
-
-// Render immediately so UI shows even before Firebase responds
-render();
-setSyncStatus('● Loading...','#d4a843');
+// startup moved to end
 
 function saveChecks(p){db.ref('checks/'+p).set(checks[p]);}
 function savePhoto(p,key,data){
@@ -469,6 +451,23 @@ function render(){
 }
 
 render();
+
+// ── STARTUP ──
+render();
+setSyncStatus('● Loading...','#d4a843');
+
+let loadCount = 0;
+const totalLoads = PEOPLE.length * 3;
+function onDataLoad(){
+  loadCount++;
+  render();
+  if(loadCount >= totalLoads) setSyncStatus('✓ Live','#3ddc84');
+}
+PEOPLE.forEach(p=>{
+  db.ref('checks/'+p).on('value',snap=>{checks[p]=snap.val()||{};onDataLoad();});
+  db.ref('photos/'+p).on('value',snap=>{photos[p]=snap.val()||{};onDataLoad();});
+  db.ref('seca/'+p).on('value',snap=>{secaScans[p]=snap.val()||{};onDataLoad();});
+});
 </script>
 </body>
 </html>
