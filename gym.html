@@ -1,1 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seabridge Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#e8e8e8;font-family:'DM Sans',sans-serif;min-height:100vh}
+.hidden{display:none!important}
+header{background:#111;border-bottom:2px solid #d4a843;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:#d4a843}
+.user-badge{font-size:.72rem;color:#888;letter-spacing:1px}
+.nav-tabs{display:flex;background:#0e0e0e;border-bottom:1px solid #1e1e1e;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:12px 18px;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:2px;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.nav-tab.active{color:#d4a843;border-bottom-color:#d4a843}
+.page{max-width:900px;margin:0 auto;padding:16px}
+
+/* PERSON SELECTOR */
+.person-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.person-btn{flex:1;min-width:80px;padding:10px;background:#141414;border:2px solid #1e1e1e;border-radius:8px;color:#555;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;cursor:pointer;text-align:center;transition:all .2s}
+.person-btn.on{background:#1a1500;border-color:#d4a843;color:#d4a843}
+
+/* MEMBERSHIP CARD */
+.mem-card{background:linear-gradient(135deg,#1a1200,#2d2000,#1a1200);border:1px solid #d4a843;border-radius:16px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+.mem-gym{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:4px;color:#d4a843}
+.mem-name{font-size:1.3rem;font-weight:700;color:#fff;margin-top:8px}
+.mem-role{font-size:.72rem;color:#888;margin-top:2px;letter-spacing:1px;text-transform:uppercase}
+.mem-status{display:inline-flex;align-items:center;gap:6px;background:#1a2620;border:1px solid #3ddc84;border-radius:20px;padding:4px 12px;font-size:.7rem;color:#3ddc84;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:12px}
+.mem-id{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:2px;color:#555;margin-top:12px}
+
+/* SECTION */
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#d4a843;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.cl{display:grid;gap:8px;margin-bottom:8px}
+
+/* PROGRESS */
+.prog-bar{height:5px;background:#1e1e1e;border-radius:3px;overflow:hidden;margin-bottom:3px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#d4a843,#f0c060);border-radius:3px;transition:width .4s}
+.prog-label{font-size:.65rem;color:#555;letter-spacing:1px}
+
+/* CHECK ROWS */
+.cr{background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;transition:all .15s}
+.cr.ck{background:#121f16;border-color:#3ddc84}
+.cb{width:22px;height:22px;border-radius:5px;border:2px solid #2e2e2e;background:transparent;display:flex;align-items:center;justify-content:center;color:#000;font-size:.8rem;font-weight:700;flex-shrink:0}
+.cr.ck .cb{background:#3ddc84;border-color:#3ddc84}
+.rt{font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:3px;flex-shrink:0}
+.rl{font-size:.88rem;font-weight:500;color:#bbb;flex:1}
+.cr.ck .rl{color:#444;text-decoration:line-through}
+
+/* MEAL ROWS */
+.mr{background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden}
+.mr.ck{border-color:#3ddc84}
+.mr-top{padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.mr.ck .cb{background:#3ddc84;border-color:#3ddc84}
+.mr.ck .rl{color:#444;text-decoration:line-through}
+.pa{border-top:1px solid #1e1e1e;padding:10px 14px;background:#0f0f0f}
+.pp{width:100%;max-height:160px;object-fit:cover;border-radius:6px;display:block;margin-bottom:8px;cursor:pointer}
+.pr{font-size:.65rem;color:#ff6b35;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.ub{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #333;border-radius:6px;padding:9px 12px;cursor:pointer;width:100%}
+.ub span{font-size:.78rem;color:#666}
+.ub.hp span{color:#3ddc84}
+.ub input{display:none}
+.ti{background:#1a1a1a;border:1px solid #333;border-radius:5px;padding:8px 10px;color:#e8e8e8;font-family:'DM Sans',sans-serif;font-size:.85rem;width:100%;margin-top:8px;outline:none}
+
+/* DAY STRIP */
+#dayStrip{display:flex;gap:6px;overflow-x:auto;padding:14px 0 10px;scrollbar-width:none}
+#dayStrip::-webkit-scrollbar{display:none}
+.db{flex-shrink:0;width:36px;height:36px;border-radius:50%;border:2px solid #2a2a2a;background:#161616;color:#555;font-family:'Bebas Neue',sans-serif;font-size:.85rem;cursor:pointer;transition:all .15s;position:relative;outline:none}
+.db.on{border-color:#d4a843;background:#d4a843;color:#000}
+.db.dn{border-color:#3ddc84;background:#162018;color:#3ddc84}
+.db.dn::after{content:'';position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;background:#3ddc84;border-radius:50%;border:2px solid #0a0a0a}
+.day-hdr{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.day-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1;color:#d4a843}
+.day-dow{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:3px;color:#444}
+
+/* SECA */
+.seca-card{background:#141414;border:1px solid #2a1a0a;border-radius:10px;padding:14px;margin-bottom:10px}
+.seca-card h3{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:2px;color:#e08040;margin-bottom:3px}
+.seca-card p{font-size:.7rem;color:#555;margin-bottom:10px}
+.seca-card img{width:100%;border-radius:6px;margin-bottom:8px;display:block;cursor:pointer}
+.su{display:flex;align-items:center;gap:8px;background:#1a1a1a;border:1px dashed #2a1a0a;border-radius:6px;padding:9px 12px;cursor:pointer;width:100%}
+.su span{font-size:.78rem;color:#666}
+.su.hp span{color:#3ddc84}
+.su input{display:none}
+
+/* COACH VIEW */
+.coach-member{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:14px;margin-bottom:10px}
+.coach-member-name{font-weight:700;font-size:1rem;margin-bottom:2px}
+.coach-member-sub{font-size:.72rem;color:#666;margin-bottom:10px}
+
+/* NAV BUTTONS */
+.nr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.nb{padding:8px 18px;border-radius:5px;border:2px solid #222;background:transparent;color:#444;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;outline:none}
+.nb:hover{border-color:#d4a843;color:#d4a843}
+.fn{margin-top:16px;font-size:.6rem;color:#2a2a2a;text-align:center;letter-spacing:1px}
+.rn{color:#3a3a3a;font-size:.82rem;padding:8px 0 16px}
+
+/* MODAL */
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;align-items:center;justify-content:center;padding:20px}
+#modal.show{display:flex}
+#modal img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+#mc{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+#sync{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:#888}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Seabridge Gym</div>
+  <div id="sync">● Loading...</div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showTab('card',this)">🪪 Card</div>
+  <div class="nav-tab" onclick="showTab('checklist',this)">✅ Daily</div>
+  <div class="nav-tab" onclick="showTab('progress',this)">📊 Progress</div>
+  <div class="nav-tab" onclick="showTab('coach',this)">👁️ Coach</div>
+</div>
+
+<!-- CARD TAB -->
+<div class="page" id="tab-card">
+  <div class="sec-title">👤 Select Member</div>
+  <div class="person-row" id="personRow"></div>
+  <div id="memberCard"></div>
+</div>
+
+<!-- CHECKLIST TAB -->
+<div class="page hidden" id="tab-checklist">
+  <div class="person-row" id="personRow2"></div>
+  <div id="dayStrip"></div>
+  <div class="day-hdr">
+    <span class="day-num" id="dayNum">Day 1</span>
+    <span class="day-dow" id="dayDow">Mon · Week 1</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="dayProg" style="width:0%"></div></div>
+  <div class="prog-label" id="dayProgLabel">0 / 0 tasks</div>
+  <div id="checklistContent"></div>
+  <div class="nr">
+    <button class="nb" id="prevBtn">← Prev</button>
+    <button class="nb" id="nextBtn">Next →</button>
+  </div>
+  <div class="fn">Syncs live · Coach John Franco can see your progress</div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div class="page hidden" id="tab-progress">
+  <div class="person-row" id="personRow3"></div>
+  <div class="sec-title">📊 Overall Progress</div>
+  <div style="background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:16px">
+    <div style="font-size:2rem;font-weight:700;color:#d4a843" id="overallPct">0%</div>
+    <div class="prog-bar" style="margin-top:8px"><div class="prog-fill" id="overallFill" style="width:0%"></div></div>
+    <div class="prog-label" id="overallLabel">0 / 0 tasks</div>
+  </div>
+  <div class="sec-title">📷 SECA Scans</div>
+  <div id="secaHistory"></div>
+</div>
+
+<!-- COACH TAB -->
+<div class="page hidden" id="tab-coach">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:#d4a843;margin-bottom:4px">👁️ Coach John Franco</div>
+  <div style="font-size:.72rem;color:#555;margin-bottom:16px;letter-spacing:1px">VIEW ONLY — All Member Progress</div>
+  <div id="coachView">Loading...</div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" onclick="closeModal()">
+  <button id="mc">✕</button>
+  <img id="mi" src="" alt="">
+</div>
+
+<script>
+var FB = 'https://seabridge30day-default-rtdb.firebaseio.com';
+var DAYS = 30;
+var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+var MEMBERS = [
+  { id: 'josh',  name: 'Josh',  role: 'Member / Owner' }
+];
+
+var MEALS = [
+  {key:'breakfast',label:'Breakfast',bg:'#1a3a5c',tc:'#60a0e0',photo:true},
+  {key:'shake1',label:'Shake 1',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'lunch',label:'Lunch',bg:'#1a2d0a',tc:'#80c040',photo:true},
+  {key:'shake2',label:'Shake 2',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'dinner',label:'Dinner',bg:'#2d0a1a',tc:'#e060a0',photo:true},
+  {key:'water',label:'1 Gallon Water',bg:'#0a1e2d',tc:'#40c0ff',photo:false}
+];
+
+var ap = 'josh';
+var currentDay = 1;
+var allChecks = {josh:{}};
+var allPhotos = {josh:{}};
+var allSeca   = {josh:{}};
+
+function setSyncStatus(msg,col){ var el=document.getElementById('sync'); el.textContent=msg; el.style.color=col||'#888'; }
+
+function fbGet(path,cb){ fetch(FB+'/'+path+'.json').then(function(r){return r.json();}).then(cb).catch(function(){cb(null);}); }
+function fbSet(path,data){ fetch(FB+'/'+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){}); }
+
+function loadAll(){
+  var done=0, total=MEMBERS.length*3;
+  function check(){ done++; if(done>=total){ render(); setSyncStatus('✓ Live','#3ddc84'); } }
+  MEMBERS.forEach(function(m){
+    fbGet('checks/'+m.id,function(d){allChecks[m.id]=d||{};check();});
+    fbGet('photos/'+m.id,function(d){allPhotos[m.id]=d||{};check();});
+    fbGet('seca/'+m.id,function(d){allSeca[m.id]=d||{};check();});
+  });
+}
+
+function saveChecks(){ setSyncStatus('⟳ Saving...','#d4a843'); fbSet('checks/'+ap,allChecks[ap]); setSyncStatus('✓ Live','#3ddc84'); }
+function savePhoto(key,data){ allPhotos[ap][key]=data; fbSet('photos/'+ap+'/'+key,data); setSyncStatus('✓ Saved','#3ddc84'); }
+function saveSeca(key,data){ allSeca[ap][key]=data; fbSet('seca/'+ap+'/'+key,data); setSyncStatus('✓ Saved','#3ddc84'); }
+
+function getFit(di){ var d=di%7; return{cardio:d<5,boot:d<5,sun:d===6}; }
+function getItems(di){
+  var f=getFit(di), r=MEALS.map(function(m){return m.key;});
+  if(f.cardio)r.push('cardio');
+  if(f.boot)r.push('boot');
+  if(f.sun){r.push('rhino');r.push('weigh');}
+  return r;
+}
+function chk(p,d,i){return!!(allChecks[p]&&allChecks[p][d+'-'+i]);}
+function getPhoto(p,d,i){return allPhotos[p]&&allPhotos[p][d+'-'+i];}
+function getSeca(p,d){return allSeca[p]&&allSeca[p]['d'+d];}
+function dayDone(p,d){return getItems(d-1).every(function(i){return chk(p,d,i);});}
+function getOverallProg(p){
+  var t=0,dn=0;
+  for(var d=1;d<=DAYS;d++){var its=getItems(d-1);t+=its.length;its.forEach(function(i){if(chk(p,d,i))dn++;});}
+  return{t:t,dn:dn,pct:t?Math.round(dn/t*100):0};
+}
+function getDayProg(p,d){
+  var its=getItems(d-1),dn=its.filter(function(i){return chk(p,d,i);}).length;
+  return{t:its.length,dn:dn,pct:its.length?Math.round(dn/its.length*100):0};
+}
+
+function compress(file,maxW,cb){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var scale=Math.min(1,maxW/img.width);
+      canvas.width=img.width*scale; canvas.height=img.height*scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      cb(canvas.toDataURL('image/jpeg',0.7));
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── PERSON SELECTORS ──
+function buildPersonRows(){
+  ['personRow','personRow2','personRow3'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML=MEMBERS.map(function(m){
+      return'<button class="person-btn'+(ap===m.id?' on':'')+'" data-pid="'+m.id+'">'+m.name+'</button>';
+    }).join('');
+    el.querySelectorAll('.person-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        ap=this.getAttribute('data-pid');
+        buildPersonRows();
+        render();
+      });
+    });
+  });
+}
+
+// ── TABS ──
+function showTab(name,el){
+  ['card','checklist','progress','coach'].forEach(function(t){
+    var pg=document.getElementById('tab-'+t);
+    if(pg)pg.classList.add('hidden');
+  });
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  if(el)el.classList.add('active');
+  if(name==='coach')renderCoachView();
+  if(name==='progress')renderProgress();
+  if(name==='checklist')renderChecklist();
+  if(name==='card')renderCard();
+}
+
+// ── RENDER ──
+function render(){
+  buildPersonRows();
+  renderCard();
+  renderChecklist();
+  renderProgress();
+}
+
+function renderCard(){
+  var m=MEMBERS.find(function(x){return x.id===ap;});
+  if(!m)return;
+  var pg=getOverallProg(ap);
+  document.getElementById('memberCard').innerHTML=
+    '<div class="mem-card">'+
+      '<div class="mem-gym">Seabridge Gym</div>'+
+      '<div class="mem-name">'+m.name+'</div>'+
+      '<div class="mem-role">'+m.role+'</div>'+
+      '<div class="mem-status"><span style="width:8px;height:8px;background:#3ddc84;border-radius:50%;display:inline-block"></span> Active Member</div>'+
+      '<div style="margin-top:14px">'+
+        '<div class="prog-bar"><div class="prog-fill" style="width:'+pg.pct+'%"></div></div>'+
+        '<div class="prog-label">'+pg.pct+'% complete · '+pg.dn+'/'+pg.t+' tasks</div>'+
+      '</div>'+
+      '<div class="mem-id">30-DAY CHALLENGE · COACH: JOHN FRANCO</div>'+
+    '</div>'+
+    '<div class="sec-title">📋 My Plan</div>'+
+    '<div style="background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;font-size:.85rem;color:#888;line-height:1.8">'+
+      '3 Meals/Day · 2 Shakes · 1 Gallon Water<br>'+
+      'Mon–Fri: 5AM Bootcamp + 30 Min Cardio<br>'+
+      'Sunday: RhinoFit Check-In + Weigh-In (Fasted)<br>'+
+      'Sat & Sun: Rest Days'+
+    '</div>';
+}
+
+function renderChecklist(){
+  var day=currentDay, f=getFit(day-1), dow=DOW[(day-1)%7], wk=Math.ceil(day/7);
+  var dp=getDayProg(ap,day);
+  document.getElementById('dayNum').textContent='Day '+day;
+  document.getElementById('dayDow').textContent=dow+' · Week '+wk;
+  document.getElementById('dayProg').style.width=dp.pct+'%';
+  document.getElementById('dayProgLabel').textContent=dp.dn+' / '+dp.t+' tasks complete';
+
+  var stripHTML='';
+  for(var d=1;d<=DAYS;d++){
+    var cls='db';
+    if(day===d)cls+=' on';
+    else if(dayDone(ap,d))cls+=' dn';
+    stripHTML+='<button class="'+cls+'" data-day="'+d+'">'+d+'</button>';
+  }
+  document.getElementById('dayStrip').innerHTML=stripHTML;
+  document.querySelectorAll('.db').forEach(function(btn){
+    btn.addEventListener('click',function(){currentDay=parseInt(this.getAttribute('data-day'));renderChecklist();});
+  });
+  setTimeout(function(){var a=document.querySelector('.db.on');if(a)a.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});},50);
+
+  var html='<div class="sec-title">🍽️ Meals & Shakes</div><div class="cl">';
+  MEALS.forEach(function(m){html+=mealRowHTML(m,day);});
+  html+='</div>';
+
+  if(f.cardio||f.boot){
+    html+='<div class="sec-title">🏃 Fitness</div><div class="cl">';
+    if(f.cardio)html+=cardioRowHTML(day);
+    if(f.boot){
+      var bck=chk(ap,day,'boot');
+      html+='<div class="cr'+(bck?' ck':'')+'" data-type="simple" data-day="'+day+'" data-item="boot">'+
+        '<div class="cb">'+(bck?'✓':'')+'</div>'+
+        '<span style="font-size:1rem">⚡</span>'+
+        '<span class="rt" style="background:#08162a;color:#4db8ff">Bootcamp</span>'+
+        '<span class="rl">5AM Bootcamp Class</span></div>';
+    }
+    html+='</div>';
+  }else{
+    html+='<div class="sec-title">😴 Rest Day</div><div class="rn">'+(f.sun?'Rest & check in with Coach John Franco.':'Recovery, stretch, or walk.')+'</div>';
+  }
+
+  if(f.sun)html+=sundayHTML(day,wk);
+  if(day===1)html+=day1SecaHTML();
+
+  document.getElementById('checklistContent').innerHTML=html;
+
+  document.querySelectorAll('[data-type="simple"]').forEach(function(el){
+    el.addEventListener('click',function(){toggleSimple(parseInt(this.getAttribute('data-day')),this.getAttribute('data-item'));});
+  });
+  document.querySelectorAll('[data-type="meal"]').forEach(function(el){
+    el.addEventListener('click',function(){checkMeal(parseInt(this.getAttribute('data-day')),this.getAttribute('data-item'));});
+  });
+  document.querySelectorAll('[data-type="cardio-check"]').forEach(function(el){
+    el.addEventListener('click',function(){checkCardio(parseInt(this.getAttribute('data-day')));});
+  });
+  document.querySelectorAll('.photo-input').forEach(function(inp){
+    inp.addEventListener('change',function(){handlePhoto(parseInt(this.getAttribute('data-day')),this.getAttribute('data-item'),this);});
+  });
+  document.querySelectorAll('.seca-input').forEach(function(inp){
+    inp.addEventListener('change',function(){handleSecaPhoto(parseInt(this.getAttribute('data-day')),this);});
+  });
+  document.querySelectorAll('.cardio-time').forEach(function(inp){
+    inp.addEventListener('change',function(){saveCardioTime(parseInt(this.getAttribute('data-day')),this.value);});
+  });
+  document.querySelectorAll('.preview-img').forEach(function(img){
+    img.addEventListener('click',function(){openModal(this.src);});
+  });
+}
+
+function mealRowHTML(m,day){
+  var ck=chk(ap,day,m.key),ph=getPhoto(ap,day,m.key);
+  var html='<div class="mr'+(ck?' ck':'')+'"><div class="mr-top" data-type="meal" data-day="'+day+'" data-item="'+m.key+'">';
+  html+='<div class="cb">'+(ck?'✓':'')+'</div>';
+  html+='<span class="rt" style="background:'+m.bg+';color:'+m.tc+'">'+m.label+'</span>';
+  html+='<span class="rl">'+m.label+'</span></div>';
+  if(m.photo){
+    html+='<div class="pa">';
+    if(ph)html+='<img class="pp preview-img" src="'+ph+'" alt="">';
+    if(!ck)html+='<div class="pr">📸 Photo required to check off</div>';
+    html+='<label class="ub'+(ph?' hp':'')+'"><span>'+(ph?'✓ Photo saved — tap to change':'📷 Upload photo of '+m.label)+'</span>';
+    html+='<input type="file" accept="image/*" class="photo-input" data-day="'+day+'" data-item="'+m.key+'"></label></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function cardioRowHTML(day){
+  var ck=chk(ap,day,'cardio'),ph=getPhoto(ap,day,'cardio'),ctime=allChecks[ap][day+'-cardiotime']||'';
+  var html='<div class="mr'+(ck?' ck':'')+'"><div class="mr-top" data-type="cardio-check" data-day="'+day+'">';
+  html+='<div class="cb">'+(ck?'✓':'')+'</div><span style="font-size:1rem">🔥</span>';
+  html+='<span class="rt" style="background:#2a1508;color:#e08040">Cardio</span>';
+  html+='<span class="rl">30 Min Cardio'+(ctime?' <span style="color:#3ddc84;font-size:.75rem">· '+ctime+'</span>':'')+'</span></div>';
+  html+='<div class="pa">';
+  if(ph)html+='<img class="pp preview-img" src="'+ph+'" alt="">';
+  html+='<div class="pr">📸 Photo + time required</div>';
+  html+='<label class="ub'+(ph?' hp':'')+'"><span>'+(ph?'✓ Photo saved — tap to change':'📷 Upload machine photo')+'</span>';
+  html+='<input type="file" accept="image/*" class="photo-input" data-day="'+day+'" data-item="cardio"></label>';
+  html+='<input class="ti cardio-time" type="text" placeholder="e.g. 32 min" value="'+ctime+'" data-day="'+day+'">';
+  html+='</div></div>';
+  return html;
+}
+
+function sundayHTML(day,wk){
+  var rck=chk(ap,day,'rhino'),wck=chk(ap,day,'weigh'),sd=getSeca(ap,day);
+  var html='<div class="sec-title">📋 Weekly Check-In</div><div class="cl">';
+  html+='<div class="cr'+(rck?' ck':'')+'" data-type="simple" data-day="'+day+'" data-item="rhino">'+
+    '<div class="cb">'+(rck?'✓':'')+'</div><span style="font-size:1rem">📱</span>'+
+    '<span class="rt" style="background:#0d1f2d;color:#4db8ff">RhinoFit</span>'+
+    '<span class="rl">Check-In with Coach John Franco — Fasted</span></div>';
+  html+='<div class="cr'+(wck?' ck':'')+'" data-type="simple" data-day="'+day+'" data-item="weigh">'+
+    '<div class="cb">'+(wck?'✓':'')+'</div><span style="font-size:1rem">⚖️</span>'+
+    '<span class="rt" style="background:#1a0d2d;color:#b87fff">Weigh-In</span>'+
+    '<span class="rl">Weekly Weigh-In — Fasted</span></div></div>';
+  html+='<div class="sec-title">📊 SECA Scan</div>';
+  html+='<div class="seca-card"><h3>Week '+wk+' Scan</h3><p>Upload SECA body composition scan after check-in</p>';
+  if(sd)html+='<img src="'+sd+'" class="preview-img" alt="SECA">';
+  html+='<label class="su'+(sd?' hp':'')+'"><span>'+(sd?'✓ Scan uploaded — tap to change':'📄 Upload SECA scan')+'</span>';
+  html+='<input type="file" accept="image/*" class="seca-input" data-day="'+day+'"></label></div>';
+  return html;
+}
+
+function day1SecaHTML(){
+  var sd=getSeca(ap,1);
+  return'<div class="sec-title">📊 Day 1 Baseline</div>'+
+    '<div class="seca-card"><h3>Starting Scan</h3><p>Upload your Day 1 body composition scan</p>'+
+    (sd?'<img src="'+sd+'" class="preview-img" alt="SECA">':'')+
+    '<label class="su'+(sd?' hp':'')+'"><span>'+(sd?'✓ Uploaded — tap to change':'📄 Upload Day 1 SECA scan')+'</span>'+
+    '<input type="file" accept="image/*" class="seca-input" data-day="1"></label></div>';
+}
+
+function renderProgress(){
+  var pg=getOverallProg(ap);
+  document.getElementById('overallPct').textContent=pg.pct+'%';
+  document.getElementById('overallFill').style.width=pg.pct+'%';
+  document.getElementById('overallLabel').textContent=pg.dn+' / '+pg.t+' tasks complete';
+  var html='';
+  for(var d=1;d<=DAYS;d++){
+    var sd=getSeca(ap,d);
+    if(sd)html+='<div class="seca-card"><h3>'+(d===1?'Day 1 Baseline':'Week '+Math.ceil(d/7)+' — Day '+d)+'</h3>'+
+      '<img src="'+sd+'" style="width:100%;border-radius:6px;cursor:pointer" class="preview-img" alt="SECA"></div>';
+  }
+  document.getElementById('secaHistory').innerHTML=html||'<div style="color:#555;font-size:.85rem;padding:10px 0">No scans uploaded yet.</div>';
+  document.querySelectorAll('.preview-img').forEach(function(img){img.addEventListener('click',function(){openModal(this.src);});});
+}
+
+function renderCoachView(){
+  var html='';
+  MEMBERS.forEach(function(m){
+    var pg=getOverallProg(m.id);
+    html+='<div class="coach-member">'+
+      '<div class="coach-member-name">'+m.name+'</div>'+
+      '<div class="coach-member-sub">'+m.role+' · 30-Day Challenge</div>'+
+      '<div class="prog-bar"><div class="prog-fill" style="width:'+pg.pct+'%"></div></div>'+
+      '<div class="prog-label" style="margin-bottom:10px">'+pg.pct+'% · '+pg.dn+'/'+pg.t+' tasks</div>';
+    // Show today's checklist status
+    var today=currentDay, dp=getDayProg(m.id,today);
+    html+='<div style="font-size:.75rem;color:#666">Day '+today+': '+dp.dn+'/'+dp.t+' done today</div>';
+    html+='</div>';
+  });
+  document.getElementById('coachView').innerHTML=html;
+}
+
+// ── ACTIONS ──
+function toggleSimple(d,item){
+  allChecks[ap][d+'-'+item]=!allChecks[ap][d+'-'+item];
+  saveChecks(); renderChecklist();
+}
+function checkMeal(d,item){
+  var meal=MEALS.find(function(m){return m.key===item;});
+  if(meal&&meal.photo&&!getPhoto(ap,d,item)){alert('📸 Upload a photo first to check off this item.');return;}
+  allChecks[ap][d+'-'+item]=!allChecks[ap][d+'-'+item];
+  saveChecks(); renderChecklist();
+}
+function checkCardio(d){
+  if(!getPhoto(ap,d,'cardio')){alert('📸 Upload cardio machine photo first.');return;}
+  if(!allChecks[ap][d+'-cardiotime']||!allChecks[ap][d+'-cardiotime'].trim()){alert('⏱ Enter your cardio time first.');return;}
+  allChecks[ap][d+'-cardio']=!allChecks[ap][d+'-cardio'];
+  saveChecks(); renderChecklist();
+}
+function saveCardioTime(d,val){allChecks[ap][d+'-cardiotime']=val;saveChecks();}
+function handlePhoto(d,item,input){
+  if(!input.files[0])return;
+  setSyncStatus('⟳ Uploading...','#d4a843');
+  compress(input.files[0],600,function(data){savePhoto(d+'-'+item,data);renderChecklist();});
+}
+function handleSecaPhoto(d,input){
+  if(!input.files[0])return;
+  setSyncStatus('⟳ Uploading...','#d4a843');
+  compress(input.files[0],800,function(data){saveSeca('d'+d,data);renderChecklist();renderProgress();});
+}
+function openModal(src){document.getElementById('mi').src=src;document.getElementById('modal').className='show';}
+function closeModal(){document.getElementById('modal').className='';}
+
+// ── NAV ──
+document.getElementById('prevBtn').addEventListener('click',function(){if(currentDay>1){currentDay--;renderChecklist();}});
+document.getElementById('nextBtn').addEventListener('click',function(){if(currentDay<DAYS){currentDay++;renderChecklist();}});
+
+// ── START ──
+setSyncStatus('● Loading...','#d4a843');
+render();
+loadAll();
+setInterval(function(){
+  MEMBERS.forEach(function(m){
+    fbGet('checks/'+m.id,function(d){if(d)allChecks[m.id]=d;});
+    fbGet('photos/'+m.id,function(d){if(d)allPhotos[m.id]=d;});
+    fbGet('seca/'+m.id,function(d){if(d)allSeca[m.id]=d;});
+  });
+},10000);
+</script>
+</body>
+</html>
 
