@@ -103,10 +103,36 @@ header{background:#111;border-bottom:2px solid #d4a843;padding:14px 20px;display
 #modal img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
 #mc{position:absolute;top:20px;right:20px;background:#333;border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}
 #sync{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:#888}
+
+/* ── SPLASH SCREEN ── */
+#splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s ease}
+#splash.fade{opacity:0;pointer-events:none}
+.splash-glow{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(212,168,67,.12) 0%,transparent 65%);border-radius:50%;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.15);opacity:1}}
+.splash-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,14vw,5.5rem);letter-spacing:10px;color:#d4a843;line-height:1;opacity:0;animation:riseIn 1.2s ease .3s forwards;text-align:center;position:relative}
+.splash-sub{font-size:.75rem;color:#666;letter-spacing:6px;text-transform:uppercase;margin-top:10px;opacity:0;animation:riseIn 1s ease .9s forwards;position:relative}
+.splash-line{width:0;height:2px;background:linear-gradient(90deg,transparent,#d4a843,transparent);margin:28px 0;animation:lineGrow 1.2s ease 1.3s forwards;position:relative}
+@keyframes lineGrow{to{width:220px}}
+.splash-quote{font-size:1.05rem;color:#bbb;text-align:center;max-width:300px;line-height:1.6;font-weight:500;opacity:0;animation:riseIn 1.2s ease 1.8s forwards;position:relative;font-style:italic}
+.splash-author{font-size:.68rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:12px;opacity:0;animation:riseIn 1s ease 2.3s forwards;position:relative}
+.splash-tap{position:absolute;bottom:60px;font-size:.7rem;color:#444;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:riseIn 1s ease 3s forwards,blink 2s ease 4s infinite}
+@keyframes riseIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:.9}50%{opacity:.3}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-glow"></div>
+  <div class="splash-logo">SEABRIDGE</div>
+  <div class="splash-sub">Gym · Oxnard</div>
+  <div class="splash-line"></div>
+  <div class="splash-quote" id="splashQuote"></div>
+  <div class="splash-author" id="splashAuthor"></div>
+  <div class="splash-tap">Tap anywhere to begin</div>
+</div>
 
 <header>
   <div class="logo">Seabridge Gym</div>
@@ -561,6 +587,43 @@ function resetAll(){
     render();
   }, 500);
 }
+
+
+// ── SPLASH SCREEN ──
+var QUOTES = [
+  {q:'Discipline is choosing between what you want now and what you want most.', a:'Abraham Lincoln'},
+  {q:'The pain you feel today will be the strength you feel tomorrow.', a:'Seabridge Gym'},
+  {q:'You don\'t have to be extreme, just consistent.', a:'Coach John Franco'},
+  {q:'Nobody ever drowned in sweat.', a:'Lou Holtz'},
+  {q:'The body achieves what the mind believes.', a:'Napoleon Hill'},
+  {q:'Success starts with self-discipline.', a:'Seabridge Gym'},
+  {q:'It never gets easier. You just get stronger.', a:'Unknown'},
+  {q:'One day or day one. You decide.', a:'Unknown'},
+  {q:'Sweat is fat crying.', a:'Unknown'},
+  {q:'Champions train. Losers complain.', a:'Unknown'},
+  {q:'Your only limit is you.', a:'Seabridge Gym'},
+  {q:'Fall in love with the process and the results will come.', a:'Eric Thomas'},
+  {q:'Strive for progress, not perfection.', a:'Unknown'},
+  {q:'The hardest lift of all is lifting your butt off the couch.', a:'Unknown'},
+  {q:'Earn it every day.', a:'Coach John Franco'}
+];
+
+(function initSplash(){
+  var pick = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  document.getElementById('splashQuote').textContent = '"' + pick.q + '"';
+  document.getElementById('splashAuthor').textContent = '— ' + pick.a;
+  var splash = document.getElementById('splash');
+  var dismissed = false;
+  function dismiss(){
+    if(dismissed) return;
+    dismissed = true;
+    splash.classList.add('fade');
+    setTimeout(function(){ splash.style.display='none'; }, 850);
+  }
+  splash.addEventListener('click', dismiss);
+  // Auto-dismiss after 6 seconds
+  setTimeout(dismiss, 6000);
+})();
 
 // ── START ──
 setSyncStatus('● Loading...','#d4a843');
