@@ -140,6 +140,7 @@ header{background:#111;border-bottom:2px solid #d4a843;padding:14px 20px;display
   <div class="nr">
     <button class="nb" id="prevBtn">← Prev</button>
     <button class="nb" id="nextBtn">Next →</button>
+    <button class="nb" id="resetBtn" style="border-color:#3a1515;color:#ff4757">🗑 Reset All</button>
   </div>
   <div class="fn">Syncs live · Coach John Franco can see your progress</div>
 </div>
@@ -513,6 +514,35 @@ function closeModal(){document.getElementById('modal').className='';}
 // ── NAV ──
 document.getElementById('prevBtn').addEventListener('click',function(){if(currentDay>1){currentDay--;renderChecklist();}});
 document.getElementById('nextBtn').addEventListener('click',function(){if(currentDay<DAYS){currentDay++;renderChecklist();}});
+document.getElementById('resetBtn').addEventListener('click',resetAll);
+
+
+// ── RESET WITH DOUBLE CONFIRMATION ──
+function resetAll(){
+  // First confirmation
+  if(!confirm('⚠️ Reset ALL data for Josh?\n\nThis deletes every check, photo, and SECA scan. This cannot be undone.')){
+    return;
+  }
+  // Second confirmation - must type RESET
+  var typed = prompt('To confirm, type RESET in capital letters:');
+  if(typed !== 'RESET'){
+    alert('Reset cancelled — text did not match.');
+    return;
+  }
+  // Wipe everything
+  setSyncStatus('⟳ Resetting...','#ff4757');
+  allChecks[ap] = {};
+  allPhotos[ap] = {};
+  allSeca[ap] = {};
+  fetch(FB+'/checks/'+ap+'.json',{method:'DELETE'});
+  fetch(FB+'/photos/'+ap+'.json',{method:'DELETE'});
+  fetch(FB+'/seca/'+ap+'.json',{method:'DELETE'});
+  currentDay = 1;
+  setTimeout(function(){
+    setSyncStatus('✓ Reset Complete','#3ddc84');
+    render();
+  }, 500);
+}
 
 // ── START ──
 setSyncStatus('● Loading...','#d4a843');
@@ -528,4 +558,3 @@ setInterval(function(){
 </script>
 </body>
 </html>
-
