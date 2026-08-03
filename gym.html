@@ -143,6 +143,7 @@ header{background:#111;border-bottom:2px solid #d4a843;padding:14px 20px;display
   <div class="nav-tab active" onclick="showTab('card',this)">🪪 Card</div>
   <div class="nav-tab" onclick="showTab('checklist',this)">✅ Daily</div>
   <div class="nav-tab" onclick="showTab('progress',this)">📊 Progress</div>
+  <div class="nav-tab" onclick="showTab('supps',this)">💊 Supps</div>
   <div class="nav-tab" onclick="showTab('coach',this)">👁️ Coach</div>
 </div>
 
@@ -181,8 +182,19 @@ header{background:#111;border-bottom:2px solid #d4a843;padding:14px 20px;display
     <div class="prog-bar" style="margin-top:8px"><div class="prog-fill" id="overallFill" style="width:0%"></div></div>
     <div class="prog-label" id="overallLabel">0 / 0 tasks</div>
   </div>
-  <div class="sec-title">📷 SECA Scans</div>
+  <div class="sec-title">📸 Physique Photos</div>
+  <div style="font-size:.72rem;color:#e08040;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Due every Sunday morning · Fasted</div>
+  <div id="physiqueUpload"></div>
+  <div id="physiqueHistory"></div>
+  <div class="sec-title" style="margin-top:20px">📷 SECA Scans</div>
   <div id="secaHistory"></div>
+</div>
+
+<!-- SUPPLEMENTS TAB -->
+<div class="page hidden" id="tab-supps">
+  <div class="sec-title">💊 My Supplements</div>
+  <div style="font-size:.72rem;color:#555;margin-bottom:14px;letter-spacing:1px">SET BY COACH JOHN FRANCO</div>
+  <div id="suppsList"></div>
 </div>
 
 <!-- COACH TAB -->
@@ -204,15 +216,15 @@ var DAYS = 30;
 var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 var MEMBERS = [
-  { id: 'josh',  name: 'Josh',  role: 'Member / Owner', barcode: '3916806' }
+  { id: 'josh',  name: 'Josh',  role: 'Member', barcode: '3916806' }
 ];
 
 var MEALS = [
-  {key:'breakfast',label:'Breakfast',bg:'#1a3a5c',tc:'#60a0e0',photo:true},
-  {key:'shake1',label:'Shake 1',bg:'#2d2208',tc:'#d4a843',photo:true},
-  {key:'lunch',label:'Lunch',bg:'#1a2d0a',tc:'#80c040',photo:true},
-  {key:'shake2',label:'Shake 2',bg:'#2d2208',tc:'#d4a843',photo:true},
-  {key:'dinner',label:'Dinner',bg:'#2d0a1a',tc:'#e060a0',photo:true},
+  {key:'breakfast',label:'Meal 1',bg:'#1a3a5c',tc:'#60a0e0',photo:true},
+  {key:'shake1',label:'Meal 2',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'lunch',label:'Meal 3',bg:'#1a2d0a',tc:'#80c040',photo:true},
+  {key:'shake2',label:'Meal 4',bg:'#2d2208',tc:'#d4a843',photo:true},
+  {key:'dinner',label:'Meal 5',bg:'#2d0a1a',tc:'#e060a0',photo:true},
   {key:'water',label:'1 Gallon Water',bg:'#0a1e2d',tc:'#40c0ff',photo:false}
 ];
 
@@ -221,6 +233,11 @@ var currentDay = 1;
 var allChecks = {josh:{}};
 var allPhotos = {josh:{}};
 var allSeca   = {josh:{}};
+var allNotes  = {josh:{}};  // coach notes per day
+var allPlans  = {josh:{}};  // coach meal plans per day (d1..d30)
+var coachPlanDay = 1;  // which day the coach is editing
+var allPhysique = {josh:{}};  // weekly physique photos: d7: {front,back,left,right}
+var allSupps = {josh:{}};  // supplements set by coach: {s1:{name,dose,time},s2,s3}
 
 function setSyncStatus(msg,col){ var el=document.getElementById('sync'); el.textContent=msg; el.style.color=col||'#888'; }
 
@@ -234,11 +251,62 @@ function loadAll(){
     fbGet('checks/'+m.id,function(d){allChecks[m.id]=d||{};check();});
     fbGet('photos/'+m.id,function(d){allPhotos[m.id]=d||{};check();});
     fbGet('seca/'+m.id,function(d){allSeca[m.id]=d||{};check();});
+    fbGet('notes/'+m.id,function(d){allNotes[m.id]=d||{};});
+    fbGet('mealplans/'+m.id,function(d){allPlans[m.id]=d||{};});
+    fbGet('physique/'+m.id,function(d){allPhysique[m.id]=d||{};});
+    fbGet('supps/'+m.id,function(d){allSupps[m.id]=d||{};});
   });
 }
 
 function saveChecks(){ setSyncStatus('⟳ Saving...','#d4a843'); fbSet('checks/'+ap,allChecks[ap]); setSyncStatus('✓ Live','#3ddc84'); }
 function savePhoto(key,data){ allPhotos[ap][key]=data; fbSet('photos/'+ap+'/'+key,data); setSyncStatus('✓ Saved','#3ddc84'); }
+function saveNote(memberId,day,text){
+  if(!allNotes[memberId])allNotes[memberId]={};
+  allNotes[memberId]['d'+day]=text;
+  fbSet('notes/'+memberId+'/d'+day,text);
+  setSyncStatus('✓ Note Saved','#3ddc84');
+}
+function getNote(p,d){return allNotes[p]&&allNotes[p]['d'+d]||'';}
+function getSupp(p,slot){
+  return allSupps[p]&&allSupps[p][slot]||null;
+}
+function saveSupps(memberId,supps){
+  allSupps[memberId]=supps;
+  fbSet('supps/'+memberId,supps);
+  setSyncStatus('✓ Supplements Saved','#3ddc84');
+}
+
+function getPhysique(p,d,view){
+  return allPhysique[p]&&allPhysique[p]['d'+d]&&allPhysique[p]['d'+d][view]||'';
+}
+function savePhysique(p,d,view,data){
+  if(!allPhysique[p])allPhysique[p]={};
+  if(!allPhysique[p]['d'+d])allPhysique[p]['d'+d]={};
+  allPhysique[p]['d'+d][view]=data;
+  fbSet('physique/'+p+'/d'+d+'/'+view,data);
+  setSyncStatus('✓ Photo Saved','#3ddc84');
+}
+function getMealPlan(p,d,mealKey){
+  var v=allPlans[p]&&allPlans[p]['d'+d]&&allPlans[p]['d'+d][mealKey];
+  if(!v)return null;
+  if(typeof v==='string')return{name:'',desc:v,time:''};
+  return v;
+}
+function saveMealPlanDay(memberId,day,plans){
+  if(!allPlans[memberId])allPlans[memberId]={};
+  allPlans[memberId]['d'+day]=plans;
+  fbSet('mealplans/'+memberId+'/d'+day,plans);
+  setSyncStatus('✓ Day '+day+' Plan Saved','#3ddc84');
+}
+function saveMealPlanRemaining(memberId,fromDay,plans){
+  if(!allPlans[memberId])allPlans[memberId]={};
+  for(var d=fromDay;d<=DAYS;d++){
+    allPlans[memberId]['d'+d]=plans;
+  }
+  fbSet('mealplans/'+memberId,allPlans[memberId]);
+  setSyncStatus('✓ Plan Saved','#3ddc84');
+}
+
 function saveSeca(key,data){ allSeca[ap][key]=data; fbSet('seca/'+ap+'/'+key,data); setSyncStatus('✓ Saved','#3ddc84'); }
 
 function getFit(di){ var d=di%7; return{cardio:d<5,boot:d<5,sun:d===6}; }
@@ -246,7 +314,7 @@ function getItems(di){
   var f=getFit(di), r=MEALS.map(function(m){return m.key;});
   if(f.cardio)r.push('cardio');
   if(f.boot)r.push('boot');
-  if(f.sun){r.push('rhino');r.push('weigh');}
+  if(f.sun){r.push('weigh');}
   return r;
 }
 function chk(p,d,i){return!!(allChecks[p]&&allChecks[p][d+'-'+i]);}
@@ -307,6 +375,7 @@ function showTab(name,el){
   document.getElementById('tab-'+name).classList.remove('hidden');
   if(el)el.classList.add('active');
   if(name==='coach')renderCoachView();
+  if(name==='supps')renderSupps();
   if(name==='progress')renderProgress();
   if(name==='checklist')renderChecklist();
   if(name==='card')renderCard();
@@ -318,6 +387,23 @@ function render(){
   renderCard();
   renderChecklist();
   renderProgress();
+}
+
+function buildPlanSummary(p,d){
+  var rows='';
+  MEALS.filter(function(x){return x.key!=='water';}).forEach(function(meal){
+    var plan=getMealPlan(p,d,meal.key);
+    if(plan&&(plan.name||plan.desc)){
+      rows+='<div style="margin-bottom:8px">'+
+        '<span style="color:#e8e8e8;font-weight:700">'+(plan.name||meal.label)+'</span>'+
+        (plan.time?' <span style="color:#d4a843;font-size:.78rem">· '+plan.time+'</span>':'')+
+        (plan.desc?'<br><span style="font-size:.8rem;color:#777">'+plan.desc+'</span>':'')+
+      '</div>';
+    }
+  });
+  if(!rows)return 'No plan set yet — Coach John Franco will set your meals in the Coach tab.';
+  rows+='<div style="margin-top:6px;padding-top:8px;border-top:1px solid #1e1e1e;font-size:.78rem;color:#666">+ 1 Gallon Water daily</div>';
+  return rows;
 }
 
 function renderCard(){
@@ -340,12 +426,9 @@ function renderCard(){
       '</div>'+
       '<div class="mem-id">30-DAY CHALLENGE · COACH: JOHN FRANCO</div>'+
     '</div>'+
-    '<div class="sec-title">📋 My Plan</div>'+
+    '<div class="sec-title">📋 My Plan — Day '+currentDay+'</div>'+
     '<div style="background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;font-size:.85rem;color:#888;line-height:1.8">'+
-      '3 Meals/Day · 2 Shakes · 1 Gallon Water<br>'+
-      'Mon–Fri: 5AM Bootcamp + 30 Min Cardio<br>'+
-      'Sunday: RhinoFit Check-In + Weigh-In (Fasted)<br>'+
-      'Sat & Sun: Rest Days'+
+    buildPlanSummary(ap,currentDay)+
     '</div>';
   // Render barcode
   if(m.barcode && window.JsBarcode){
@@ -404,7 +487,16 @@ function renderChecklist(){
   }
 
   if(f.sun)html+=sundayHTML(day,wk);
-  if(day===1)html+=day1SecaHTML();
+
+  // Coach note for this day (read-only for member)
+  var note=getNote(ap,day);
+  if(note){
+    html+='<div class="sec-title">💬 Coach Note</div>'+
+      '<div style="background:#0d1a12;border:1px solid #1e3a28;border-radius:10px;padding:14px;font-size:.88rem;color:#a8d5b8;line-height:1.6">'+
+        '<div style="font-size:.65rem;color:#3ddc84;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">From Coach John Franco</div>'+
+        note.replace(/\n/g,'<br>')+
+      '</div>';
+  }
 
   document.getElementById('checklistContent').innerHTML=html;
 
@@ -423,6 +515,9 @@ function renderChecklist(){
   document.querySelectorAll('.seca-input').forEach(function(inp){
     inp.addEventListener('change',function(){handleSecaPhoto(parseInt(this.getAttribute('data-day')),this);});
   });
+  document.querySelectorAll('.physique-input').forEach(function(inp){
+    inp.addEventListener('change',function(){handlePhysiquePhoto(parseInt(this.getAttribute('data-day')),this.getAttribute('data-view'),this);});
+  });
   document.querySelectorAll('.cardio-time').forEach(function(inp){
     inp.addEventListener('change',function(){saveCardioTime(parseInt(this.getAttribute('data-day')),this.value);});
   });
@@ -433,15 +528,24 @@ function renderChecklist(){
 
 function mealRowHTML(m,day){
   var ck=chk(ap,day,m.key),ph=getPhoto(ap,day,m.key);
+  var plan=getMealPlan(ap,day,m.key);
+  var labelHTML;
+  if(plan&&(plan.name||plan.desc||plan.time)){
+    labelHTML='<span class="rl"><span style="color:#e8e8e8;font-weight:700">'+(plan.name||m.label)+'</span>'+
+      (plan.time?' <span style="color:#d4a843;font-size:.72rem">· '+plan.time+'</span>':'')+
+      (plan.desc?'<br><span style="font-size:.78rem;color:#888">'+plan.desc+'</span>':'')+
+      '</span>';
+  }else{
+    labelHTML='<span class="rl">'+m.label+'</span>';
+  }
   var html='<div class="mr'+(ck?' ck':'')+'"><div class="mr-top" data-type="meal" data-day="'+day+'" data-item="'+m.key+'">';
   html+='<div class="cb">'+(ck?'✓':'')+'</div>';
-  html+='<span class="rt" style="background:'+m.bg+';color:'+m.tc+'">'+m.label+'</span>';
-  html+='<span class="rl">'+m.label+'</span></div>';
+  html+=labelHTML+'</div>';
   if(m.photo){
     html+='<div class="pa">';
     if(ph)html+='<img class="pp preview-img" src="'+ph+'" alt="">';
     if(!ck)html+='<div class="pr">📸 Photo required to check off</div>';
-    html+='<label class="ub'+(ph?' hp':'')+'"><span>'+(ph?'✓ Photo saved — tap to change':'📷 Upload photo of '+m.label)+'</span>';
+    html+='<label class="ub'+(ph?' hp':'')+'"><span>'+(ph?'✓ Photo saved — tap to change':'📷 Upload photo')+'</span>';
     html+='<input type="file" accept="image/*" class="photo-input" data-day="'+day+'" data-item="'+m.key+'"></label></div>';
   }
   html+='</div>';
@@ -465,31 +569,25 @@ function cardioRowHTML(day){
 }
 
 function sundayHTML(day,wk){
-  var rck=chk(ap,day,'rhino'),wck=chk(ap,day,'weigh'),sd=getSeca(ap,day);
+  var wck=chk(ap,day,'weigh');
   var html='<div class="sec-title">📋 Weekly Check-In</div><div class="cl">';
-  html+='<div class="cr'+(rck?' ck':'')+'" data-type="simple" data-day="'+day+'" data-item="rhino">'+
-    '<div class="cb">'+(rck?'✓':'')+'</div><span style="font-size:1rem">📱</span>'+
-    '<span class="rt" style="background:#0d1f2d;color:#4db8ff">RhinoFit</span>'+
-    '<span class="rl">Check-In with Coach John Franco — Fasted</span></div>';
   html+='<div class="cr'+(wck?' ck':'')+'" data-type="simple" data-day="'+day+'" data-item="weigh">'+
     '<div class="cb">'+(wck?'✓':'')+'</div><span style="font-size:1rem">⚖️</span>'+
     '<span class="rt" style="background:#1a0d2d;color:#b87fff">Weigh-In</span>'+
     '<span class="rl">Weekly Weigh-In — Fasted</span></div></div>';
-  html+='<div class="sec-title">📊 SECA Scan</div>';
-  html+='<div class="seca-card"><h3>Week '+wk+' Scan</h3><p>Upload SECA body composition scan after check-in</p>';
-  if(sd)html+='<img src="'+sd+'" class="preview-img" alt="SECA">';
-  html+='<label class="su'+(sd?' hp':'')+'"><span>'+(sd?'✓ Scan uploaded — tap to change':'📄 Upload SECA scan')+'</span>';
-  html+='<input type="file" accept="image/*" class="seca-input" data-day="'+day+'"></label></div>';
   return html;
 }
 
-function day1SecaHTML(){
-  var sd=getSeca(ap,1);
-  return'<div class="sec-title">📊 Day 1 Baseline</div>'+
-    '<div class="seca-card"><h3>Starting Scan</h3><p>Upload your Day 1 body composition scan</p>'+
-    (sd?'<img src="'+sd+'" class="preview-img" alt="SECA">':'')+
-    '<label class="su'+(sd?' hp':'')+'"><span>'+(sd?'✓ Uploaded — tap to change':'📄 Upload Day 1 SECA scan')+'</span>'+
-    '<input type="file" accept="image/*" class="seca-input" data-day="1"></label></div>';
+
+function getCurrentSunday(){
+  // Find the current or most recent Sunday (day 7, 14, 21, 28) based on currentDay
+  var sundays=[7,14,21,28];
+  var target=7;
+  for(var i=0;i<sundays.length;i++){
+    if(currentDay>=sundays[i])target=sundays[i];
+  }
+  // If currentDay is before day 7, target week 1 Sunday
+  return target;
 }
 
 function renderProgress(){
@@ -498,30 +596,192 @@ function renderProgress(){
   document.getElementById('overallFill').style.width=pg.pct+'%';
   document.getElementById('overallLabel').textContent=pg.dn+' / '+pg.t+' tasks complete';
   var html='';
-  for(var d=1;d<=DAYS;d++){
-    var sd=getSeca(ap,d);
-    if(sd)html+='<div class="seca-card"><h3>'+(d===1?'Day 1 Baseline':'Week '+Math.ceil(d/7)+' — Day '+d)+'</h3>'+
-      '<img src="'+sd+'" style="width:100%;border-radius:6px;cursor:pointer" class="preview-img" alt="SECA"></div>';
-  }
-  document.getElementById('secaHistory').innerHTML=html||'<div style="color:#555;font-size:.85rem;padding:10px 0">No scans uploaded yet.</div>';
+  [{d:1,t:'Day 1 — Starting Scan',s:'Your baseline body composition'},{d:30,t:'Day 30 — Final Scan',s:'Your end-of-challenge results'}].forEach(function(item){
+    var sd=getSeca(ap,item.d);
+    html+='<div class="seca-card"><h3>'+item.t+'</h3><p>'+item.s+'</p>';
+    if(sd)html+='<img src="'+sd+'" class="preview-img" style="width:100%;border-radius:6px;cursor:pointer;margin-bottom:8px" alt="SECA">';
+    html+='<label class="su'+(sd?' hp':'')+'"><span>'+(sd?'✓ Scan uploaded — tap to change':'📄 Upload SECA scan')+'</span>';
+    html+='<input type="file" accept="image/*" class="seca-input" data-day="'+item.d+'"></label></div>';
+  });
+  document.getElementById('secaHistory').innerHTML=html;
+
+  // Wire up SECA inputs in progress tab
+  document.querySelectorAll('#secaHistory .seca-input').forEach(function(inp){
+    inp.addEventListener('change',function(){handleSecaPhoto(parseInt(this.getAttribute('data-day')),this);});
+  });
+
+  // Physique upload sections - all 4 weeks
+  var VIEWSU=[{k:'front',l:'Front View'},{k:'back',l:'Back View'},{k:'left',l:'Left Side'},{k:'right',l:'Right Side'}];
+  var upHtml='';
+  [1,7,14,21,28].forEach(function(upDay){
+    var upWk=Math.ceil(upDay/7);
+    var title=upDay===1?'Day 1 — Starting Photos':'Week '+upWk+' Physique Check — Day '+upDay;
+    upHtml+='<div class="seca-card"><h3>'+title+'</h3><p>All 4 angles required</p>';
+    upHtml+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    VIEWSU.forEach(function(v){
+      var img=getPhysique(ap,upDay,v.k);
+      upHtml+='<div style="background:#0e0e0e;border-radius:8px;padding:8px;text-align:center">';
+      upHtml+='<div style="font-size:.62rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">'+v.l+'</div>';
+      if(img){
+        upHtml+='<img src="'+img+'" class="preview-img" style="width:100%;height:120px;object-fit:cover;border-radius:6px;cursor:pointer;margin-bottom:6px" alt="'+v.l+'">';
+      }else{
+        upHtml+='<div style="width:100%;height:120px;background:#141414;border:1px dashed #2a2a2a;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;color:#444;font-size:.72rem;letter-spacing:1px;text-transform:uppercase">'+v.l+'</div>';
+      }
+      upHtml+='<label style="display:block;background:'+(img?'#121f16':'#1a1a1a')+';border:1px dashed '+(img?'#3ddc84':'#333')+';border-radius:5px;padding:6px;cursor:pointer;font-size:.68rem;color:'+(img?'#3ddc84':'#666')+'">';
+      upHtml+=(img?'✓ Retake':'📷 Upload');
+      upHtml+='<input type="file" accept="image/*" class="physique-input" data-day="'+upDay+'" data-view="'+v.k+'" style="display:none"></label>';
+      upHtml+='</div>';
+    });
+    upHtml+='</div></div>';
+  });
+  var upContainer=document.getElementById('physiqueUpload');
+  if(upContainer)upContainer.innerHTML=upHtml;
+
+  var container=document.getElementById('physiqueHistory');
+  if(container)container.innerHTML='';
+
+  // Wire up physique upload inputs
+  document.querySelectorAll('.physique-input').forEach(function(inp){
+    inp.addEventListener('change',function(){
+      handlePhysiquePhoto(parseInt(this.getAttribute('data-day')),this.getAttribute('data-view'),this);
+    });
+  });
+  document.querySelectorAll('.preview-img').forEach(function(img){
+    img.addEventListener('click',function(){openModal(this.src);});
+  });
   document.querySelectorAll('.preview-img').forEach(function(img){img.addEventListener('click',function(){openModal(this.src);});});
+}
+
+function renderSupps(){
+  var html='';
+  ['s1','s2','s3'].forEach(function(slot,i){
+    var s=getSupp(ap,slot);
+    if(s&&(s.name||s.dose||s.time)){
+      html+='<div style="background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:14px;margin-bottom:10px">'+
+        '<div style="font-size:1rem;font-weight:700;color:#e8e8e8">'+(s.name||'Supplement '+(i+1))+'</div>'+
+        (s.dose?'<div style="font-size:.82rem;color:#888;margin-top:4px">'+s.dose+'</div>':'')+
+        (s.time?'<div style="font-size:.78rem;color:#d4a843;margin-top:4px">⏰ '+s.time+'</div>':'')+
+      '</div>';
+    }
+  });
+  document.getElementById('suppsList').innerHTML=html||
+    '<div style="background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;font-size:.85rem;color:#666">No supplements set yet — Coach John Franco will fill these in.</div>';
 }
 
 function renderCoachView(){
   var html='';
   MEMBERS.forEach(function(m){
     var pg=getOverallProg(m.id);
+    var today=currentDay, dp=getDayProg(m.id,today);
+    var existingNote=getNote(m.id,today);
     html+='<div class="coach-member">'+
       '<div class="coach-member-name">'+m.name+'</div>'+
       '<div class="coach-member-sub">'+m.role+' · 30-Day Challenge</div>'+
       '<div class="prog-bar"><div class="prog-fill" style="width:'+pg.pct+'%"></div></div>'+
-      '<div class="prog-label" style="margin-bottom:10px">'+pg.pct+'% · '+pg.dn+'/'+pg.t+' tasks</div>';
-    // Show today's checklist status
-    var today=currentDay, dp=getDayProg(m.id,today);
-    html+='<div style="font-size:.75rem;color:#666">Day '+today+': '+dp.dn+'/'+dp.t+' done today</div>';
-    html+='</div>';
+      '<div class="prog-label" style="margin-bottom:10px">'+pg.pct+'% · '+pg.dn+'/'+pg.t+' tasks</div>'+
+      '<div style="font-size:.75rem;color:#666;margin-bottom:12px">Day '+today+': '+dp.dn+'/'+dp.t+' done today</div>'+
+      '<div style="font-size:.65rem;color:#e08040;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">🍽️ Meal Plan — Day '+coachPlanDay+' of 30</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">'+
+        '<button onclick="coachPlanShift(-1)" style="padding:6px 14px;background:transparent;border:1px solid #2a2a2a;border-radius:4px;color:#888;font-size:.75rem;cursor:pointer">← Prev</button>'+
+        '<span style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:2px;color:#e08040;padding:0 8px">Day '+coachPlanDay+'</span>'+
+        '<button onclick="coachPlanShift(1)" style="padding:6px 14px;background:transparent;border:1px solid #2a2a2a;border-radius:4px;color:#888;font-size:.75rem;cursor:pointer">Next →</button>'+
+      '</div>'+
+      MEALS.filter(function(x){return x.key!=='water';}).map(function(meal){
+        var ex=getMealPlan(m.id,coachPlanDay,meal.key)||{name:'',desc:'',time:''};
+        return '<div style="margin-bottom:12px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:10px">'+
+          '<div style="font-size:.62rem;color:#e08040;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">'+meal.label+'</div>'+
+          '<input id="plan-'+m.id+'-'+meal.key+'-name" value="'+(ex.name||'').replace(/"/g,'&quot;')+'" placeholder="Meal name — e.g. Power Breakfast" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none;margin-bottom:6px">'+
+          '<input id="plan-'+m.id+'-'+meal.key+'-desc" value="'+(ex.desc||'').replace(/"/g,'&quot;')+'" placeholder="What it is — e.g. 4 eggs, oatmeal, banana" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none;margin-bottom:6px">'+
+          '<input id="plan-'+m.id+'-'+meal.key+'-time" value="'+(ex.time||'').replace(/"/g,'&quot;')+'" placeholder="Time — e.g. 7:00 AM" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none">'+
+        '</div>';
+      }).join('')+
+      '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+
+        '<button onclick="coachSavePlan(\''+m.id+'\',false)" '+
+          'style="padding:8px 14px;background:#e08040;border:none;border-radius:6px;color:#000;font-family:DM Sans,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Save Day '+coachPlanDay+'</button>'+
+        '<button onclick="coachSavePlan(\''+m.id+'\',true)" '+
+          'style="padding:8px 14px;background:transparent;border:1px solid #e08040;border-radius:6px;color:#e08040;font-family:DM Sans,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Save Day '+coachPlanDay+' → 30</button>'+
+      '</div>'+
+      '<div style="font-size:.65rem;color:#b87fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">💊 Supplements (3 slots)</div>'+
+      ['s1','s2','s3'].map(function(slot,i){
+        var ex=getSupp(m.id,slot)||{name:'',dose:'',time:''};
+        return '<div style="margin-bottom:10px;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;padding:10px">'+
+          '<div style="font-size:.62rem;color:#b87fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Supplement '+(i+1)+'</div>'+
+          '<input id="supp-'+m.id+'-'+slot+'-name" value="'+(ex.name||'').replace(/"/g,'&quot;')+'" placeholder="Name — e.g. Creatine" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none;margin-bottom:6px">'+
+          '<input id="supp-'+m.id+'-'+slot+'-dose" value="'+(ex.dose||'').replace(/"/g,'&quot;')+'" placeholder="Dose — e.g. 5g" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none;margin-bottom:6px">'+
+          '<input id="supp-'+m.id+'-'+slot+'-time" value="'+(ex.time||'').replace(/"/g,'&quot;')+'" placeholder="When — e.g. Post-workout" '+
+          'style="width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:5px;padding:7px 10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.8rem;outline:none">'+
+        '</div>';
+      }).join('')+
+      '<button onclick="coachSaveSupps(\''+m.id+'\')" '+
+        'style="padding:8px 18px;background:#b87fff;border:none;border-radius:6px;color:#000;font-family:DM Sans,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-bottom:16px">Save Supplements</button>'+
+      '<div style="font-size:.65rem;color:#3ddc84;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">💬 Note for Day '+today+'</div>'+
+      '<textarea id="note-'+m.id+'" placeholder="Leave a note for '+m.name+' on Day '+today+'..." '+
+        'style="width:100%;background:#0e0e0e;border:1px solid #2a2a2a;border-radius:6px;padding:10px;color:#e8e8e8;font-family:DM Sans,sans-serif;font-size:.85rem;min-height:70px;outline:none;resize:vertical">'+existingNote+'</textarea>'+
+      '<button onclick="coachSaveNote(\''+m.id+'\','+today+')" '+
+        'style="margin-top:8px;padding:8px 18px;background:#3ddc84;border:none;border-radius:6px;color:#000;font-family:DM Sans,sans-serif;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer">Save Note</button>'+
+      '<div style="margin-top:10px;display:flex;gap:6px;align-items:center">'+
+        '<button onclick="coachDayShift(-1)" style="padding:5px 12px;background:transparent;border:1px solid #2a2a2a;border-radius:4px;color:#666;font-size:.7rem;cursor:pointer">← Day</button>'+
+        '<span style="font-size:.7rem;color:#888">Day '+today+'</span>'+
+        '<button onclick="coachDayShift(1)" style="padding:5px 12px;background:transparent;border:1px solid #2a2a2a;border-radius:4px;color:#666;font-size:.7rem;cursor:pointer">Day →</button>'+
+      '</div>'+
+    '</div>';
   });
   document.getElementById('coachView').innerHTML=html;
+}
+
+function coachSavePlan(memberId,applyRemaining){
+  var plans={};
+  MEALS.filter(function(x){return x.key!=='water';}).forEach(function(meal){
+    var nameEl=document.getElementById('plan-'+memberId+'-'+meal.key+'-name');
+    var descEl=document.getElementById('plan-'+memberId+'-'+meal.key+'-desc');
+    var timeEl=document.getElementById('plan-'+memberId+'-'+meal.key+'-time');
+    var name=nameEl?nameEl.value.trim():'';
+    var desc=descEl?descEl.value.trim():'';
+    var time=timeEl?timeEl.value.trim():'';
+    if(name||desc||time)plans[meal.key]={name:name,desc:desc,time:time};
+  });
+  if(applyRemaining){
+    if(!confirm('Apply this plan to Day '+coachPlanDay+' through Day 30?'))return;
+    saveMealPlanRemaining(memberId,coachPlanDay,plans);
+    alert('✓ Plan saved for Days '+coachPlanDay+'–30');
+  }else{
+    saveMealPlanDay(memberId,coachPlanDay,plans);
+    alert('✓ Plan saved for Day '+coachPlanDay);
+  }
+  renderChecklist();
+}
+
+function coachPlanShift(dir){
+  var next=coachPlanDay+dir;
+  if(next>=1&&next<=DAYS){coachPlanDay=next;renderCoachView();}
+}
+
+function coachSaveSupps(memberId){
+  var supps={};
+  ['s1','s2','s3'].forEach(function(slot){
+    var name=document.getElementById('supp-'+memberId+'-'+slot+'-name').value.trim();
+    var dose=document.getElementById('supp-'+memberId+'-'+slot+'-dose').value.trim();
+    var time=document.getElementById('supp-'+memberId+'-'+slot+'-time').value.trim();
+    if(name||dose||time)supps[slot]={name:name,dose:dose,time:time};
+  });
+  saveSupps(memberId,supps);
+  alert('✓ Supplements saved');
+}
+
+function coachSaveNote(memberId,day){
+  var text=document.getElementById('note-'+memberId).value;
+  saveNote(memberId,day,text);
+  alert('✓ Note saved for Day '+day);
+}
+
+function coachDayShift(dir){
+  var next=currentDay+dir;
+  if(next>=1&&next<=DAYS){currentDay=next;renderCoachView();}
 }
 
 // ── ACTIONS ──
@@ -547,10 +807,19 @@ function handlePhoto(d,item,input){
   setSyncStatus('⟳ Uploading...','#d4a843');
   compress(input.files[0],600,function(data){savePhoto(d+'-'+item,data);renderChecklist();});
 }
+function handlePhysiquePhoto(d,view,input){
+  if(!input.files[0])return;
+  setSyncStatus('⟳ Uploading...','#d4a843');
+  compress(input.files[0],700,function(data){
+    savePhysique(ap,d,view,data);
+    renderProgress();
+  });
+}
+
 function handleSecaPhoto(d,input){
   if(!input.files[0])return;
   setSyncStatus('⟳ Uploading...','#d4a843');
-  compress(input.files[0],800,function(data){saveSeca('d'+d,data);renderChecklist();renderProgress();});
+  compress(input.files[0],800,function(data){saveSeca('d'+d,data);renderProgress();});
 }
 function openModal(src){document.getElementById('mi').src=src;document.getElementById('modal').className='show';}
 function closeModal(){document.getElementById('modal').className='';}
